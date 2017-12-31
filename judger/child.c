@@ -1,7 +1,7 @@
 #define _DEFAULT_SOURCE
 #define _POSIX_SOURCE
 #define _GNU_SOURCE
-#define _
+
 
 #include<stdio.h>
 #include<stdargs.h>

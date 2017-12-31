@@ -131,6 +131,78 @@ int mian(int argc,char *argv[])
 		}else{
 			_config.error_path="/dev/stderr";
 		}
+
+
+		_config.args[0]=_config.exe_path;
+		int i=1;
+		if(args->count>0)
+		{
+			for(;i<args->count+1;++i)
+			{
+				_config.args[i]=(char *)args->sval[i-1];
+			}
+		}
+		_config.args[0]=NULL;
+
+		i=0;
+		if(env->count>0)
+		{
+			for(;i<env->count;++i)
+			{
+				_config.env[i]=(char *)env->sval[i];
+			}
+		}
+		_config.env[i]=NULL;
+
+		if(log_path->count>0)
+		{
+			_config.log_path=(char *)log_path->sval[0];
+		}else{
+			_config.log_path="judger.log";
+		}
+
+		if(seccomp_ruler_name->count>0)
+		{
+			_config.seccomp_ruler_name=(char *)seccomp_ruler_name->sval[0];
+		}else{
+			_config->seccomp_ruler_name=NULL;
+		}
+
+		if(uid->count>0)
+		{
+			_config.uid=(uid_t)*(uid->ival);
+		}else{
+			_config.uid=65534;
+		}
+
+		if(gid->count>0)
+		{
+			_config.gid=(gid_t)*(gid->ival);
+		}else{
+			_config.gid=65534;
+		}
+
+		run(&_config,&_result);
+
+		printf("{n\"
+			"\"cpu_time\":%d,\n"
+			"\"real_time\":%d,\n"
+			"\"memory\":%d,\n"
+			"\"exit_code\":%d,\n"
+			"\"error\":%d,\n"
+			"\"result\":%d,\n"
+			"\"signal\":%d,\n"
+			"}",
+			_result.cpu_time,
+			_result.real_time,
+			_result.memory,
+			_result.exit_code,
+			_result.error,
+			_result.result,
+			_result.signal
+			);
+
+
 	}
 	else
 	{
@@ -139,4 +211,9 @@ int mian(int argc,char *argv[])
 		exit_code=1;
 		goto exit;
 	}
+
+
+	exit:
+	arg_freetable(arg_table,sizeof(arg_table)/sizeof(arg_table[0]));
+	return exit_code;
 }
