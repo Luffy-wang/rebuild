@@ -4,7 +4,7 @@
 
 
 #include<stdio.h>
-#include<stdargs.h>
+#include<stdarg.h>
 #include<signal.h>
 #include<unistd.h>  //for system call
 #include<string.h>
@@ -24,10 +24,10 @@
 #include"logger.h"
 #include"killer.h"
 #include"rules/seccomp_rules.h"
-void close_file(FIle *fp,...)
+void close_file(FILE *fp,...)
 {
 	va_list ap;
-	va_start(fp,ap);
+	va_start(ap,fp);
 	if(fp!=NULL)
 	{
 		fclose(fp);
@@ -36,7 +36,7 @@ void close_file(FIle *fp,...)
 	va_end(ap);
 }
 
-void child_process(FILE *fp,struct config *_config)
+void child_process(FILE *log_fp,struct config *_config)
 {
 	FILE *input_file=NULL,*output_file=NULL,*error_file=NULL;
 	
@@ -53,8 +53,8 @@ void child_process(FILE *fp,struct config *_config)
 	if(_config->max_memory!=UNLIMITED)
 	{
 		struct rlimit max_memory;
-		max_memory.rlim_cur=max_memory.rlim_max.rlim_max=(rlim_t)(_config->max_memory)*2;
-		if(setlimit(RLIMIT_AS,&max_memory)!=0)
+		max_memory.rlim_cur=max_memory.rlim_max=(rlim_t)(_config->max_memory)*2;
+		if(setrlimit(RLIMIT_AS,&max_memory)!=0)
 		{
 			CHILD_ERROR_EXIT(SETRLIMIT_FAILED);
 		}
@@ -82,7 +82,7 @@ void child_process(FILE *fp,struct config *_config)
 
 	if(_config->max_output_size!=UNLIMITED)
 	{
-		struct rlimit max_outut_szie;
+		struct rlimit max_output_size;
 		max_output_size.rlim_cur=max_output_size.rlim_max=(rlim_t)(_config->max_output_size);
 		if(setrlimit(RLIMIT_FSIZE,&max_output_size)!=0)
 		{
@@ -91,9 +91,9 @@ void child_process(FILE *fp,struct config *_config)
 	}
 
 
-	if(_config->input_file!=NULL)
+	if(_config->input_path!=NULL)
 	{
-		input_file=fopen(_config->input_file,"r");
+		input_file=fopen(_config->input_path,"r");
 		if(input_file==NULL)
 		{
 			CHILD_ERROR_EXIT(DUP2_FAILED);
@@ -104,9 +104,9 @@ void child_process(FILE *fp,struct config *_config)
 		}
 	}
 
-	if(_config->output_file!=NULL)
+	if(_config->output_path!=NULL)
 	{
-		output_file=fopen(_config->output_file,"w");
+		output_file=fopen(_config->output_path,"w");
 		if(output_file==NULL)
 		{
 			CHILD_ERROR_EXIT(DUP2_FAILED);
@@ -117,14 +117,14 @@ void child_process(FILE *fp,struct config *_config)
 		}
 	}
 
-	if(_config->error_file!=NULL)
+	if(_config->error_path!=NULL)
 	{
-		if(_config->output_file!=NULL &&strcmp(_config->output_file,_config->error_file)==0)
+		if(_config->output_path!=NULL &&strcmp(_config->output_path,_config->error_path)==0)
 		{
 			error_file=output_file;
 		}
 		else{
-			error_file=fopen(_config->error_file,"w");
+			error_file=fopen(_config->error_path,"w");
 			if(error_file==NULL)
 			{
 				CHILD_ERROR_EXIT(DUP2_FAILED);
@@ -137,8 +137,8 @@ void child_process(FILE *fp,struct config *_config)
 		
 	}
 
-	git_t group_list[]={_config_gid};
-	if(_config->gid=-1 &&(setgid(_config->gid)==-1 ||setgroups(sizeof(group_list)/sizeof(gid_t),group_list)==-1))
+	gid_t group_list[]={_config->gid};
+	if(_config->gid!=-1 &&(setgid(_config->gid)==-1 ||setgroups(sizeof(group_list)/sizeof(gid_t),group_list)==-1))
 	{
 		CHILD_ERROR_EXIT(SETUID_FAILED);
 	}
@@ -150,18 +150,18 @@ void child_process(FILE *fp,struct config *_config)
 	}
 
 	//load seccomp
-	if(_config->seccomp_ruler_name!=NULL)
+	if(_config->seccomp_rule_name!=NULL)
 	{
-		if(strcmp("c_cpp",_config->seccomp_rules_name)==0)
+		if(strcmp("c_cpp",_config->seccomp_rule_name)==0)
 		{
 			if(c_cpp_seccomp_rules(_config)!=SUCCESS)
 			{
 				CHILD_ERROR_EXIT(LOAD_SECCOMP_FAILED);
 			}
 		}
-		else if(strcmp("general",_config->seccomp_rules_name)==0)
+		else if(strcmp("general",_config->seccomp_rule_name)==0)
 		{
-			if(general_seccomp_rules_(_config)!=SUCCESS)
+			if(general_seccomp_rules(_config)!=SUCCESS)
 			{
 				CHILD_ERROR_EXIT(LOAD_SECCOMP_FAILED);
 			}

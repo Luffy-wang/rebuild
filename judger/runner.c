@@ -1,3 +1,6 @@
+#define _GNU_SOURCE
+#define _POSIX_SOURCE
+
 #include<pthread.h>
 #include<stdio.h>
 #include<stdlib.h>
@@ -45,7 +48,7 @@ void run(struct config *_config,struct result *_result)
 		(_config->max_stack<1)||
 		(_config->max_memory<1 &&_config->max_memory!=UNLIMITED)||
 		(_config->max_process_number<1 &&_config->max_process_number!=UNLIMITED)||
-		(_config->out_put_size<1 &&_config->out_put_size!=UNLIMITED))
+		(_config->max_output_size<1 &&_config->max_output_size!=UNLIMITED))
 	{
 		ERROR_EXIT(INVALID_CONFIG);
 	}
@@ -75,7 +78,7 @@ void run(struct config *_config,struct result *_result)
 			struct timeout_killer_args killer_args;
 			killer_args.timeout=_config->max_real_time;
 			killer_args.pid=child_pid;
-			if(pthread_create(&tid,NULL,timeout_killer,(void*)(killer_args))!=0)
+			if(pthread_create(&tid,NULL,timeout_killer,(void*)(&killer_args))!=0)
 			{
 				kill_pid(child_pid);
 				ERROR_EXIT(PTHREAD_FAILED);
@@ -114,7 +117,7 @@ void run(struct config *_config,struct result *_result)
 		{
 			_result->exit_code=WEXITSTATUS(status);
 			_result->cpu_time=(resource_usage.ru_utime.tv_sec*1000+
-									resource_usage.ru_time.tv_usec/1000);
+									resource_usage.ru_utime.tv_usec/1000);
 			_result->memory=resource_usage.ru_maxrss*1024;
 			if(_result->exit_code!=0)
 			{

@@ -15,7 +15,7 @@ int kill_pid(pid_t pid)
 void *timeout_killer(void *timeout_killer_args)
 {
 	pid_t pid=((struct timeout_killer_args*)timeout_killer_args)->pid;
-	int time=((struct *timeout_killer_args*)timeout_killer_args)->time;
+	int timeout=((struct timeout_killer_args*)timeout_killer_args)->timeout;
 
 	if(pthread_detach(pthread_self())!=0)
 	{
@@ -33,4 +33,5 @@ void *timeout_killer(void *timeout_killer_args)
 	{
 		return NULL;
 	}
+	return NULL;
 }

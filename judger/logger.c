@@ -1,3 +1,4 @@
+#define _POSIX_SOURCE
 #include<stdio.h>
 #include<stdlib.h>
 #include<sys/file.h>
@@ -11,7 +12,7 @@
 
 FILE *log_open(const char *filename)
 {
-	FILE *Log_fp=fopen(filename,"a");
+	FILE *log_fp=fopen(filename,"a");
 	if(log_fp==NULL)
 	{
 		fprintf(stderr, "can not open log file %s\n",filename );
@@ -27,7 +28,7 @@ void log_close(FILE *log_fp)
 	}
 }
 
-void write(int level,const char *source_filename,const int line,const FILE *log_fp,const char *fmt,...)
+void log_write(int level,const char *source_filename,const int line,const FILE *log_fp,const char *fmt,...)
 {
 	char LOG_LEVEL_NOTE[][10]={"FATAL","WARNING","INFO","DEBUG"};
 	if(log_fp==NULL)
@@ -63,7 +64,7 @@ void write(int level,const char *source_filename,const int line,const FILE *log_
 	}  
 	else
 	{
-		fprintf(stderr, "flock error", );
+		fprintf(stderr, "flock error");
 		return;
 	}
 }

@@ -5,13 +5,13 @@
 #define STR_PLACE_HOLDER "str"
 
 struct arg_lit *verb,*help,*version;
-struct arg_int *max_cpu_time,max_real_time,*max_process,*max_process,*max_stack,
+struct arg_int *max_cpu_time,*max_real_time,*max_process,*max_memory,*max_stack,
 				*max_output_size,*uid,*gid;
 struct arg_str *exe_path,*input_path,*output_path,*error_path,*args,*env,*log_path,
 				*seccomp_ruler_name;
 struct arg_end *end;
 
-int mian(int argc,char *argv[])
+int main(int argc,char *argv[])
 {
 	void *arg_table[]={
 		help=arg_litn(NULL,"help",0,1,"Display This Help And Exit"),
@@ -19,7 +19,7 @@ int mian(int argc,char *argv[])
 		max_cpu_time=arg_intn(NULL,"max_cpu_time",INT_PLACE_HOLDER,0,1,"max cpu time (ms)"),
 		max_real_time=arg_intn(NULL,"max_real_time",INT_PLACE_HOLDER,0,1,"max real time (ms)"),
 		max_process=arg_intn(NULL,"max_process",INT_PLACE_HOLDER,0,1,"max process"),
-		max_memory=arg_intn(NUL,"max_memory",INT_PLACE_HOLDER,0,1,"max memory (byte)"),
+		max_memory=arg_intn(NULL,"max_memory",INT_PLACE_HOLDER,0,1,"max memory (byte)"),
 		max_stack=arg_intn(NULL,"max_stack",INT_PLACE_HOLDER,0,1,"Max stack (byte default=16M)"),
 		max_output_size=arg_intn(NULL,"max_output_size",INT_PLACE_HOLDER,0,1,"max out size (byte)"),
 
@@ -32,7 +32,7 @@ int mian(int argc,char *argv[])
 		env=arg_strn(NULL,"env",STR_PLACE_HOLDER,0,255,"Env"),
 
 		log_path=arg_strn(NULL,"log_path",STR_PLACE_HOLDER,0,1,"Log path"),
-		seccomp_ruler_name=arg_strn(NULL,"seccomp_ruler_name",STR_PLACE_HOLDER,0,1"seccomp ruler name"),
+		seccomp_ruler_name=arg_strn(NULL,"seccomp_ruler_name",STR_PLACE_HOLDER,0,1,"seccomp ruler name"),
 
 		uid=arg_intn(NULL,"uid",INT_PLACE_HOLDER,0,1,"uid(default 65534)"),
 		gid=arg_intn(NULL,"gid",INT_PLACE_HOLDER,0,1,"gid(default 65534)"),
@@ -55,7 +55,7 @@ int mian(int argc,char *argv[])
 		{
 			printf("Usage: %s",name);
 			arg_print_syntax(stdout,arg_table,"\n\n");
-			arg_printf_glossary(stdout,arg_table,"%-25s %s\n");
+			arg_print_glossary(stdout,arg_table,"%-25s %s\n");
 		}
 
 		if(version->count>0)
@@ -88,10 +88,10 @@ int mian(int argc,char *argv[])
 
 		if(max_process->count>0)
 		{
-			_config.max_process=*max_process.ival;
+			_config.max_process_number=*max_process->ival;
 		}else
 		{
-			_config.max_process=UNLIMITED;
+			_config.max_process_number=UNLIMITED;
 		}
 
 		if(max_stack->count>0)
@@ -163,9 +163,9 @@ int mian(int argc,char *argv[])
 
 		if(seccomp_ruler_name->count>0)
 		{
-			_config.seccomp_ruler_name=(char *)seccomp_ruler_name->sval[0];
+			_config.seccomp_rule_name=(char *)seccomp_ruler_name->sval[0];
 		}else{
-			_config->seccomp_ruler_name=NULL;
+			_config.seccomp_rule_name=NULL;
 		}
 
 		if(uid->count>0)
@@ -184,10 +184,10 @@ int mian(int argc,char *argv[])
 
 		run(&_config,&_result);
 
-		printf("{n\"
+		printf("{\n"
 			"\"cpu_time\":%d,\n"
 			"\"real_time\":%d,\n"
-			"\"memory\":%d,\n"
+			"\"memory\":%ld,\n"
 			"\"exit_code\":%d,\n"
 			"\"error\":%d,\n"
 			"\"result\":%d,\n"
@@ -206,7 +206,7 @@ int mian(int argc,char *argv[])
 	}
 	else
 	{
-		arg_print_error(stdout,end,name);
+		arg_print_errors(stdout,end,name);
 		printf("Try '%s --help' for more information",name);
 		exit_code=1;
 		goto exit;

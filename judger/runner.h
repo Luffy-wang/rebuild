@@ -10,30 +10,30 @@
 
 #define LOG_ERROR(error_code) LOG_FATAL(log_fp,"Error:"#error_code);
 
-#define LOG_EXIT(error_code)\
+#define ERROR_EXIT(error_code)\
 	{\
 		LOG_ERROR(error_code);\
 		_result->error=error_code;\
 		log_close(log_fp);\
-		return\
+		return;\
 	}
 
 #define ARGS_MAX_NUMBER 256
 #define ENV_MAX_NUMBER	256
 
-eum{
-	SUCCESS=0;
-	INVALID_CONFIG=-1;
-	FORK_FATAL=-2;
-	PTHREAD_FAILED=-3;
-	WAIT_FAILED=-4;
-	ROOT_REQUIRED=-5;
-	LOAD_SECCOMP_FAILED=-6;
+enum{
+	SUCCESS=0,
+	INVALID_CONFIG=-1,
+	FORK_FATAL=-2,
+	PTHREAD_FAILED=-3,
+	WAIT_FAILED=-4,
+	ROOT_REQUIRED=-5,
+	LOAD_SECCOMP_FAILED=-6,
 	SETRLIMIT_FAILED = -7,
     DUP2_FAILED = -8,
     SETUID_FAILED = -9,
     EXECVE_FAILED = -10,
-    SPJ_ERROR = -11
+    SPJ_ERROR = -11,
     THREAD_CANCEL_ERROR=-12
 };
 

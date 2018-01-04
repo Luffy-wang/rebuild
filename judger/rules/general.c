@@ -3,14 +3,14 @@
 #include<sys/types.h>
 #include<errno.h>
 #include<sys/stat.h>
-#include<fantl.h>
+#include<fcntl.h>
 
 #include"../runner.h"
 
 int general_seccomp_rules(struct config *_config){
-	syscall_blacklist[]={
+	int syscall_blacklist[]={
 		SCMP_SYS(clone),SCMP_SYS(fork),
-		SCMP_SYS(forkv),SCMP_SYS(kill),
+		SCMP_SYS(vfork),SCMP_SYS(kill),
 		#ifdef __NR_execveat
 			SCMP_SYS(execveat)
 		#endif
@@ -31,13 +31,13 @@ int general_seccomp_rules(struct config *_config){
 		}
 	}
 
-	if(seccomp_rule_add(ctx,SCMP_ACT_ERRNO(EACCESS),SCMP_SYS(socket),0)!=0)
+	if(seccomp_rule_add(ctx,SCMP_ACT_ERRNO(EACCES),SCMP_SYS(socket),0)!=0)
 	{
 		return LOAD_SECCOMP_FAILED;
 	}
 
 	//add extra rules
-	if(seccomp_rule_add(ctx,SCMP_ACT_KILL,SCMP_SYS(execve),1,SCMP_V0(SCMP_CMP_NE,(scmp_datum_t)(_config->exe_path)))!=0)
+	if(seccomp_rule_add(ctx,SCMP_ACT_KILL,SCMP_SYS(execve),1,SCMP_A0(SCMP_CMP_NE,(scmp_datum_t)(_config->exe_path)))!=0)
 	{
 		return LOAD_SECCOMP_FAILED;
 	}
@@ -59,7 +59,7 @@ int general_seccomp_rules(struct config *_config){
 		return LOAD_SECCOMP_FAILED;
 	}
 
-	if(seccomp_rule_add(ctx,SCMP_ACT_KILL,SCMP_SYS(openat).1.SCMP_CMP(1,SCMP_CMP_MASKED_EQ,O_RDWR,O_RDWR))!=0)
+	if(seccomp_rule_add(ctx,SCMP_ACT_KILL,SCMP_SYS(openat),1,SCMP_CMP(1,SCMP_CMP_MASKED_EQ,O_RDWR,O_RDWR))!=0)
 	{
 		return LOAD_SECCOMP_FAILED;
 	}

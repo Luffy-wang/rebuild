@@ -1,0 +1,7 @@
+/home/kk123/Desktop/rebuild judger/CMakeFiles/install.dir
+/home/kk123/Desktop/rebuild judger/CMakeFiles/list_install_components.dir
+/home/kk123/Desktop/rebuild judger/CMakeFiles/rebuild_cache.dir
+/home/kk123/Desktop/rebuild judger/CMakeFiles/libjudger.so.dir
+/home/kk123/Desktop/rebuild judger/CMakeFiles/install/strip.dir
+/home/kk123/Desktop/rebuild judger/CMakeFiles/install/local.dir
+/home/kk123/Desktop/rebuild judger/CMakeFiles/edit_cache.dir
