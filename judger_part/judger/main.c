@@ -49,9 +49,7 @@ int main(int argc,char *argv[])
 	struct result _result={0,0,0,0,0,0,0};
 	if(arg_nullcheck(arg_table)!=0)
 		printf("error:insufficient memory\n");
-	if(nerrors==0)
-	{
-		if(help->count>0)
+	if(help->count>0)
 		{
 			printf("Usage: %s",name);
 			arg_print_syntax(stdout,arg_table,"\n\n");
@@ -63,6 +61,10 @@ int main(int argc,char *argv[])
 			printf("Version:%d.%d.%d\n",(VERSION>>16)&0xff,(VERSION>>8)&0xff,(VERSION)&0xff);
 			goto exit;
 		}
+	
+	if(nerrors==0)
+	{
+		
 
 		if(max_cpu_time->count>0)
 		{
