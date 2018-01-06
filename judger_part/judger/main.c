@@ -54,14 +54,15 @@ int main(int argc,char *argv[])
 			printf("Usage: %s",name);
 			arg_print_syntax(stdout,arg_table,"\n\n");
 			arg_print_glossary(stdout,arg_table,"%-25s %s\n");
+			goto exit;
 		}
 
-		if(version->count>0)
+	if(version->count>0)
 		{
 			printf("Version:%d.%d.%d\n",(VERSION>>16)&0xff,(VERSION>>8)&0xff,(VERSION)&0xff);
 			goto exit;
 		}
-	
+
 	if(nerrors==0)
 	{
 		
