@@ -88,7 +88,7 @@ void run(struct config *_config,struct result *_result)
 		int status;
 		struct rusage resource_usage;
 		//wait the subprocess terminate
-		if(wait4(child_pid,&status,WSTOPPED,&resource_usage)!=0)
+		if(wait4(child_pid,&status,WSTOPPED,&resource_usage)==-1)
 		{
 			kill_pid(child_pid);
 			ERROR_EXIT(WAIT_FAILED);

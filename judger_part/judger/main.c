@@ -187,14 +187,14 @@ int main(int argc,char *argv[])
 
 		run(&_config,&_result);
 
-		printf("{\n"
-			"\"cpu_time\":%d,\n"
-			"\"real_time\":%d,\n"
-			"\"memory\":%ld,\n"
-			"\"exit_code\":%d,\n"
-			"\"error\":%d,\n"
-			"\"result\":%d,\n"
-			"\"signal\":%d,\n"
+		printf("{"
+			"\"cpu_time\":%d,"
+			"\"real_time\":%d,"
+			"\"memory\":%ld,"
+			"\"exit_code\":%d,"
+			"\"error\":%d,"
+			"\"result\":%d,"
+			"\"signal\":%d"
 			"}",
 			_result.cpu_time,
 			_result.real_time,

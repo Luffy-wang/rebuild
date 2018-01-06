@@ -7,7 +7,7 @@ def run(max_cpu_time,
 		max_real_time,
 		max_memory,
 		max_stack,
-		max_process_number,
+		max_process,
 		max_output_size,
 		exe_path,
 		input_path,
@@ -57,4 +57,6 @@ def run(max_cpu_time,
 	out,err=proc.communicate()
 	if err:
 		raise ValueError("Error occur when call judger {}".format(err))
+	#out1=json.loads(out.decode("utf-8").replace("'","\""))
+
 	return json.loads(out.decode("utf-8"))
