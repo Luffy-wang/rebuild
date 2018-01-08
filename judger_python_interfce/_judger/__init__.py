@@ -2,6 +2,7 @@ import json
 import subprocess
 
 UNLIMITED=-1
+VERSION 0x020001
 
 def run(max_cpu_time,
 		max_real_time,
