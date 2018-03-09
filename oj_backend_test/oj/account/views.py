@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.template import loader
+from django.http import HttpResponse,Http404
 import hashlib
 import json
 import requests
@@ -17,7 +18,11 @@ def ping(request):
 	return HttpResponse(json.dumps(t),content_type="application/json")
 
 def detail(request,question_id):
-	return HttpResponse("you are looking at question %s ."% question_id)
+	try:
+		q=Question.objects.get(pk=question_id)
+	except Question.DoesNotExist:
+		raise Http404("Question does not exist")
+	return render(request,"account/detail.html",{"question":q})
 
 def results(request,question_id):
 	response="you are looking at the result of question %s."
@@ -28,8 +33,13 @@ def vote(request,question_id):
 
 def index(request):
 	latest_question_list=Question.objects.order_by("-pub_date")[:5]
-	output=",".join([q.question_text for q in latest_question_list])
-	return HttpResponse(output)
+	template=loader.get_template("account/index.html")
+	context={
+	"latest_question_list":latest_question_list,
+	}
+	return HttpResponse(template.render(context,request))
+	#output=",".join([q.question_text for q in latest_question_list])
+	#return HttpResponse(output)
 
 def judge(request):
 	send="123456"
