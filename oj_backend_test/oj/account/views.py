@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from django.template import loader
-from django.http import HttpResponse,Http404
+from django.http import HttpResponse,Http404,HttpResponseRedirect
+from django.urls import reverse
 import hashlib
 import json
 import requests
@@ -25,11 +26,19 @@ def detail(request,question_id):
 	return render(request,"account/detail.html",{"question":q})
 
 def results(request,question_id):
-	response="you are looking at the result of question %s."
-	return HttpResponse(response %question_id)
+	question=get_object_or_404(Question,pk=question_id)
+	return render(request,"account/results.html",{"question":question})
 
 def vote(request,question_id):
-	return HttpResponse("you're voting on question %s."% question_id)
+	question=get_object_or_404(Question,pk=question_id)
+	try:
+		select_choice=question.choice_set.get(pk=request.POST["choice"])
+	except(KeyError,Choice.DoseNotExist):
+		return render(request,"account/detail",{"question":question,"error_message":"you didn't select a choice",})
+	else:
+		select_choice.votes +=1
+		select_choice.save()
+		return HttpResponseRedirect(reverse("account:results",args=(question_id,)))
 
 def index(request):
 	latest_question_list=Question.objects.order_by("-pub_date")[:5]
