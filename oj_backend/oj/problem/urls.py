@@ -5,5 +5,6 @@ from .views import admin
 
 urlpatterns=[
     path("list",admin.get,name="problemlist"),
-    path("create",admin.post,name="problem")
+    path("create",admin.post,name="problem"),
+    path("test",admin.test,name="name"),
 ]

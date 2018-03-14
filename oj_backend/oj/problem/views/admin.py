@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from ..models import Problem
+import os
+import zipfile
     # def get(self,request):
     #     self.question_id=request.GET.get["problem"]
     #     if not question_id:
@@ -50,6 +52,17 @@ def get(request):
 def test(request):
     return HttpResponse("test")
 
-
-
-
+def UploadTestCase(request):
+    test_case_id=request.POST.get["test_case_id"]
+    test_case_dir=os.path.join("/test_case_test",test_case_id)
+    os.mkdir(test_case_dir)
+    file=request.FILES
+    tmp_file=os.path.join("/tmp",test_case_id+".zip")
+    with open(tmp_file,"wb") as f:
+        for tmpfile in file:
+            f.write(tmpfile)
+    try:
+        zip_file=zipfile.ZipFile(tmp_file)
+    except zipfile.BadZipFile:
+        return HttpResponse("the zip file is bad")
+    
