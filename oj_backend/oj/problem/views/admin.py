@@ -97,7 +97,7 @@ def UploadTestCase(request):
         }
         ret=[]
         ret.append(data)
-        test_case_info["test_cases"]["str(index+1)"]=data
+        test_case_info["test_cases"][str(index+1)]=data
 
     with open(os.path.join(test_case_dir,"info"),"w",encoding="utf-8")as f:
         f.write(json.dumps(test_case_info,indent=4))
