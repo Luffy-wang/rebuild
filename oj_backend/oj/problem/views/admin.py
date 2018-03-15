@@ -1,11 +1,17 @@
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.shortcuts import render
 from ..models import Problem
 import os
 import zipfile
-from ..serialization import UploadForm
+# from ..serialization import UploadForm
 import hashlib
 import json
+from ..serializers import ProblemSerializers
+from rest_framework.parsers import JSONParser
+from rest_framework.decorators import api_view
+from rest_framework import status
+from rest_framework.response import Response
+
     # def get(self,request):
     #     self.question_id=request.GET.get["problem"]
     #     if not question_id:
@@ -15,42 +21,36 @@ import json
     #     except Problem.DoesNotExist:
     #         raise Http404("problem is not exist")
     #     return self.success()#todo return json data
- 
+
+# class CreateProblem(APIView):
+@api_view(["GET","POST"])
 def post(request):
+    # problem=Problem.objects.all()
+    # serializer=ProblemSerializers(problem,many=True)
+    # return JsonResponse(serializer.data,safe=False)
     data=request.POST.get("_id")
     _id=data
     if not _id:
         return HttpResponse("id is required")
-    #title=data["title"]
-    # if not title:
-    #     return self.error("title is required")
-    title=request.POST.get("title")
-    description=request.POST.get("de")
-    input_d=request.POST.get("inputds")
-    out_d=request.POST.get("outputds")
-    t_i=request.POST.get("t_id")
-    tag=request.POST.get("tag")
-    languages=request.POST.get("languages")
-    create_time=request.POST.get("c_t")
-    t_l=request.POST.get("t_l")
-    m_l=request.POST.get("m_l")
+    
     if Problem.objects.filter(_id=_id).exists():
         return HttpResponse("duplicate problem_id")
-    # tags=data["tags"]
-    # if not tags:
-    #     return self.error("tag is required")
+    tags=request.POST.get("tag")
+    if not tags:
+        return HttpResponse("tag is required")
         
-    #data["created_by"]=request.user
-    data={"_id":_id,"title":title,"description":description}
-    try:
-        problem=Problem.objects.create(**data)
-    except:
-        return HttpResponse("error")
+    serializer=ProblemSerializers(data=request.data)
+    
+    if serializer.is_valid():   
+        serializer.save()
+    return JsonResponse(serializer.data)  #todo modify 
 
-    return HttpResponse("end success")
-
-def get(request):
-    return render(request,"problem/indexTest.html")
+def get(request,_id):
+    _id=request.GET.get("_id")
+    problem=Problem.objects.get(_id=1)
+    serializer=ProblemSerializers(problem)
+    
+    return JsonResponse(serializer.data)
 
 def test(request):
     return render(request,"problem/upload.html")

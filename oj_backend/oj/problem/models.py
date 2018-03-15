@@ -6,15 +6,6 @@ class ProblemTag(models.Model):
     name=models.CharField(max_length=10)
     class Meta:
         db_table="problem_tag" # db_table used to override the database table name
-    
-#class ProblemRuleType(Choices):
-#    exercise="exericise"
-#    exam="exam"
-
-class ProblemLevel(object):
-    low="low"
-    medium="medium"
-    high="high"
 
 class Problem(models.Model):
     _id=models.CharField(max_length=24,db_index=True)
