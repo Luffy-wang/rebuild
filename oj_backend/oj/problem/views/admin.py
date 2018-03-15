@@ -45,12 +45,12 @@ def post(request):
         serializer.save()
     return JsonResponse(serializer.data)  #todo modify 
 
-def get(request,_id):
-    _id=request.GET.get("_id")
-    problem=Problem.objects.get(_id=1)
-    serializer=ProblemSerializers(problem)
+def get(request):
+    #_id=request.GET.get("_id")
+    problem=Problem.objects.all()
+    serializer=ProblemSerializers(problem,many=True)
     
-    return JsonResponse(serializer.data)
+    return JsonResponse(serializer.data,safe=False)
 
 def test(request):
     return render(request,"problem/upload.html")
