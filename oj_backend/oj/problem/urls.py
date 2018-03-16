@@ -8,4 +8,5 @@ urlpatterns=[
     path("create",admin.post,name="problem"),
     path("test",admin.test,name="name"),
     path("upload",admin.UploadTestCase,name="upload"),
+    path("problem_detail/<int:problem_id>",admin.problem_detail,name="problem_detail")
 ]

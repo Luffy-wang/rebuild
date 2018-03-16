@@ -11,6 +11,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
     # def get(self,request):
     #     self.question_id=request.GET.get["problem"]
@@ -54,6 +55,15 @@ def get(request):
 
 def test(request):
     return render(request,"problem/upload.html")
+
+@api_view(["GET","POST"])
+def problem_detail(request,problem_id):
+    #problem_id=request.GET.get("problem_id")
+    if not problem_id:
+        return HttpResponse("problem id is required")
+    problem_data=get_object_or_404(Problem,_id=problem_id)
+    serializer=ProblemSerializers(problem_data)
+    return JsonResponse(serializer.data,safe=False)
 
 def UploadTestCase(request):
     #test_case_id=request.POST.get["test_case_id"]
