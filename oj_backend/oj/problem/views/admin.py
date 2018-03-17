@@ -3,7 +3,6 @@ from django.shortcuts import render
 from ..models import Problem
 import os
 import zipfile
-# from ..serialization import UploadForm
 import hashlib
 import json
 from ..serializers import ProblemSerializers
@@ -13,22 +12,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
-    # def get(self,request):
-    #     self.question_id=request.GET.get["problem"]
-    #     if not question_id:
-    #         return self.error("parameter error,problem id is required")
-    #     try:
-    #         get_object_or_404(Problem,_id=self.question_id)
-    #     except Problem.DoesNotExist:
-    #         raise Http404("problem is not exist")
-    #     return self.success()#todo return json data
-
-# class CreateProblem(APIView):
 @api_view(["GET","POST"])
 def post(request):
-    # problem=Problem.objects.all()
-    # serializer=ProblemSerializers(problem,many=True)
-    # return JsonResponse(serializer.data,safe=False)
     data=request.POST.get("_id")
     _id=data
     if not _id:
@@ -65,14 +50,13 @@ def problem_detail(request,problem_id):
     serializer=ProblemSerializers(problem_data)
     return JsonResponse(serializer.data,safe=False)
 
+@api_view(["GET","POST"])
 def UploadTestCase(request):
-    #test_case_id=request.POST.get["test_case_id"]
-    test_case_dir=os.path.join("/test_case","2")
+    test_case_id=request.data["_id"]
+    test_case_dir=os.path.join("/test_case",test_case_id)#todo
     os.mkdir(test_case_dir)
-    #file=UploadForm(request.FILES)
     file=request.FILES["fileupload"]
-    #filea=bytes(file,encoding="utf-8")
-    tmp_file=os.path.join("/tmp","2"+".zip")
+    tmp_file=os.path.join("/tmp",_id+".zip")
     
     
     with open(tmp_file,"wb") as f:

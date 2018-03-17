@@ -2,8 +2,8 @@ from rest_framework import serializers
 from .models import Submission
 
 class SubmissionSerializer(serializers.Serializer):
-    id=serializers.CharField()
-    create_time=serializers.DateTimeField()
+    problem_id=serializers.IntegerField()
+    #create_time=serializers.DateTimeField(auto_now_add=True)
     class_name=serializers.CharField()
     user_name=serializers.CharField()
     user_id=serializers.IntegerField()

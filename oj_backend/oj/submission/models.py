@@ -1,10 +1,10 @@
 from django.db import models
 from problem.models import Problem
-from 
+
 # Create your models here.
 class Submission(models.Model):
     id=models.CharField(max_length=32,primary_key=True,db_index=True)
-    problem=models.Foreignkey(Problem)
+    problem=models.ForeignKey(Problem,on_delete=True)
     create_time=models.DateTimeField(auto_now_add=True)
     class_name=models.CharField(max_length=30)
     user_id=models.IntegerField()
@@ -15,4 +15,4 @@ class Submission(models.Model):
 
     class Meta:
         db_table="Submission"
-        ordering=("-create_time")
+       
