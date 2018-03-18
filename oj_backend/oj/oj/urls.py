@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("problem/",include("problem.urls")),#must add '/',
     path("submission/",include("submission.urls")),
+    path("account/",include("account.urls")),
 ]

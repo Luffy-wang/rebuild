@@ -11,8 +11,10 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 @api_view(["GET","POST"])
+@login_required
 def post(request):
     data=request.POST.get("_id")
     _id=data
@@ -40,6 +42,11 @@ def get(request):
 
 def test(request):
     return render(request,"problem/upload.html")
+
+@login_required(login_url="/account/login")
+def problem_create_list(request):
+    return render(request,"problem/indexTest.html")
+    
 
 @api_view(["GET","POST"])
 def problem_detail(request,problem_id):

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     "problem.apps.ProblemConfig",
     "submission.apps.SubmissionConfig",
+    "account.apps.AccountConfig",
 ]
 
 MIDDLEWARE = [
