@@ -8,14 +8,16 @@ from problem.models import Problem
 from problem.serializers import ProblemSerializers
 from ..serializers import SubmissionSerializer
 import json
+from django.views.decorators.csrf import csrf_exempt
 
-
-@api_view(["GET","POST"])
+#@api_view(["GET","POST"])
 #@login_required      todo
+@csrf_exempt
 def post(request,_id):
-    data=request.data
     
-    _id=data["id"]
+    
+    data=json.loads(request.body.decode("utf-8"))
+    _id=data["_id"]
     code=data["code"]
     
     problem_data=get_object_or_404(Problem,_id=_id)
@@ -53,6 +55,7 @@ def post(request,_id):
     }
     kwargs["data"]=json.dumps(data) #convert to str
     r=requests.post("http://127.0.0.1:8088/judge",**kwargs).json()
+    return JsonResponse(r,safe=False)
     result=r["data"][0]["result"]
     
     if result==0:
