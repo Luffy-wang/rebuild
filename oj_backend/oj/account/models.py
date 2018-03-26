@@ -63,7 +63,7 @@ class User(AbstractBaseUser):
 
 
 class Myclass(models.Model):
-    class_name=models.CharField(max_length=30)
+    class_name=models.IntegerField()
     class_admin=models.CharField(max_length=30)
     class_member=models.OneToOneField(User,on_delete=False,unique=True)
     is_activity=models.BooleanField(default=False)

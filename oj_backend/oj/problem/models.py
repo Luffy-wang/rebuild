@@ -25,3 +25,6 @@ class Problem(models.Model):
     #ms
     time_limit=models.IntegerField(null=True)
     memory_limit=models.IntegerField(null=True)
+
+    def __str__(self):
+        return self._id

@@ -12,29 +12,31 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-
+from django.views.decorators.csrf import csrf_exempt
 @api_view(["GET","POST"])
-@login_required
+#@login_required
+@csrf_exempt
 def post(request):
-    data=request.POST.get("_id")
-    _id=data
+    data=json.loads(request.body.decode("utf-8"))
+    
+    _id=data["_id"]
     if not _id:
         return HttpResponse("id is required")
     
     if Problem.objects.filter(_id=_id).exists():
         return HttpResponse("duplicate problem_id")
-    tags=request.POST.get("tag")
+    tags=data["tag"]
     if not tags:
         return HttpResponse("tag is required")
         
     serializer=ProblemSerializers(data=request.data)
-    
-    if serializer.is_valid():   
+    if serializer.is_valid():
         serializer.save()
-    return JsonResponse(serializer.data)  #todo modify 
+        return JsonResponse({"data":1},safe=False)  #todo modify 
+    else:
+        return JsonResponse({"data":0},safe=False)
 
 def get(request):
-    #_id=request.GET.get("_id")
     problem=Problem.objects.all()
     serializer=ProblemSerializers(problem,many=True)
     
@@ -49,7 +51,7 @@ def problem_create_list(request):
     
 
 @api_view(["GET","POST"])
-def problem_detail(request,problem_id):
+def problem_detail(request,class_name,problem_id):
     #problem_id=request.GET.get("problem_id")
     if not problem_id:
         return HttpResponse("problem id is required")

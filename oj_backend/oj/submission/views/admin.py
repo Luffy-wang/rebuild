@@ -6,21 +6,25 @@ from django.shortcuts import render,get_object_or_404
 from submission.languages import c_lang_config
 from problem.models import Problem
 from problem.serializers import ProblemSerializers
-from ..serializers import SubmissionSerializer
+from ..serializers import SubmissionSerializer,ClassHomeworkSerializer
+from ..models import Submission,ClassHomework
 import json
 from django.views.decorators.csrf import csrf_exempt
-
+from account.models import Myclass
+from django.forms.models import model_to_dict
 #@api_view(["GET","POST"])
 #@login_required      todo
 @csrf_exempt
-def post(request,_id):
+def post(request,class_name,problem_id):
     
     
+    problem_id=problem_id
+    class_name=class_name
+    #code=request.POST.get("code")
     data=json.loads(request.body.decode("utf-8"))
-    _id=data["_id"]
     code=data["code"]
     
-    problem_data=get_object_or_404(Problem,_id=_id)
+    problem_data=get_object_or_404(Problem,_id=problem_id)
     serializers=ProblemSerializers(problem_data)
     max_cpu_time=serializers.data["time_limit"]
     max_memory=serializers.data["memory_limit"]
@@ -55,26 +59,58 @@ def post(request,_id):
     }
     kwargs["data"]=json.dumps(data) #convert to str
     r=requests.post("http://127.0.0.1:8088/judge",**kwargs).json()
-    return JsonResponse(r,safe=False)
-    result=r["data"][0]["result"]
+    try:
+        result=r["data"][0]["result"]
+    except TypeError:
+        return JsonResponse(r,safe=False)
     
-    if result==0:
-        submission_list={
-            "result":result,
-            "problem_id":_id,
-            "code":code,
-            "language":"c",#todo
-            "class_name":"1ban",
-            "user_id":request.data["user_id"],
-            "user_name":"nood",
-            
-        }
+    submission_list={
+        "result":result,
+        "problem_id":problem_id,
+        "code":code,
+        "language":"c",#todo
+        "class_name":class_name,#todo
+        "user_id":request.data["student_id"],
+        #"user_name":"nood",#todo
+    }
     serializers1=SubmissionSerializer(data=submission_list)
     if serializers1.is_valid():
         serializers1.save()
-        
-    return JsonResponse(serializers1.data)
+        return JsonResponse(serializers1.data,safe=False)
 
 def get(request):
     return render(request,"submission/submission_list.html")
-    
+
+# required teacher
+@csrf_exempt
+def addProblemToClass(request):
+    data=json.loads(request.body.decode("utf-8"))
+    class_name=data["class_name"]
+    problem_id=data["problem_id"]
+    c=Myclass.objects.filter(class_name=class_name)
+    p=Problem.objects.get(_id=problem_id)
+    if c and p:
+        problem_title=model_to_dict(p)["title"]
+        class_homework=ClassHomework.objects.create(class_name=class_name,problem_id=p,problem_title=problem_title)
+        return JsonResponse({"data":"1"})
+    else:
+        return JsonResponse({"data":"0"})
+
+@csrf_exempt
+def showClassProblem(request):
+    data=json.loads(request.body.decode("utf-8"))
+    class_name=data["class_name"]
+    data=ClassHomework.objects.filter(class_name=class_name)
+    serializer=ClassHomeworkSerializer(data,many=True)
+    return JsonResponse(serializer.data,safe=False)
+#required join class
+@csrf_exempt
+def showSampleSubmission(request):
+    data=json.loads(request.body.decode("utf-8"))
+    user_id=data["user_id"]
+    submission=Submission.objects.filter(user_id=user_id)
+    serializer=SubmissionSerializer(submission,many=True)
+    return JsonResponse(serializer.data,safe=False)
+
+
+

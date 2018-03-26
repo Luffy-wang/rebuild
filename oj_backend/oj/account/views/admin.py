@@ -48,7 +48,7 @@ def mylogin(request):
     
     return HttpResponse(13)#todo
 
-
+@csrf_exempt
 def mylogut(request):
     logout(request)
     return HttpResponse("logout success")
@@ -61,16 +61,19 @@ def create_class(request):
     user_id=data["user_id"]
    
     u=User.objects.get(user_id=user_id)
-    if get_object_or_404(Myclass,class_member=u):
-        return HttpResponse("already in class")
     if User.is_teacher(u):
         myclass=Myclass.objects.create(class_name=class_name,class_admin=u,class_member=u,is_activity=True)
+        return JsonResponse({"data":1})
     elif User.is_admin(u):
         return HttpResponse("error action")
     else:
-        myclass=Myclass.objects.create(class_name=class_name,class_member=u)
+        c=Myclass.objects.filter(class_member=u)
+        if c:
+            return JsonResponse({"data":0})
+        else:
+            myclass=Myclass.objects.create(class_name=class_name,class_member=u)
+            return JsonResponse({"data":1})
     
-    return HttpResponse("create calss success")
 #required admin
 @csrf_exempt
 def modify_user_type_to_teacher(request):
@@ -96,7 +99,7 @@ def show_class_member(request):
     u=Myclass.objects.get(class_member=user_id)
     if u:
         u=model_to_dict(u)
-        class_member=Myclass.objects.filter(class_name=u["class_name"],is_activity=True)#todo modify to true
+        class_member=Myclass.objects.filter(class_name=u["class_name"],is_activity=True)
         serializer=MyclassSerializer(class_member,many=True)
         return JsonResponse(serializer.data,safe=False)
     else:
