@@ -19,6 +19,7 @@ class Submission(models.Model):
 
 class ClassHomework(models.Model):
     class_name=models.CharField(max_length=20)
+    homework_item=models.CharField(max_length=20,default=0)
     problem_id=models.ForeignKey(Problem,on_delete=models.CASCADE)
     problem_title=models.CharField(max_length=30,default="a")
 
@@ -27,4 +28,8 @@ class ClassHomework(models.Model):
     def problem_real_id(self):
         return self.problem_id._id
 
+class Homework_item(models.Model):
+    class_name=models.CharField(max_length=20)
+    homework_item=models.CharField(max_length=20)
+    homework_item_title=models.CharField(max_length=30)
     

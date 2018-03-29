@@ -6,8 +6,8 @@ from django.shortcuts import render,get_object_or_404
 from submission.languages import c_lang_config
 from problem.models import Problem
 from problem.serializers import ProblemSerializers
-from ..serializers import SubmissionSerializer,ClassHomeworkSerializer
-from ..models import Submission,ClassHomework
+from ..serializers import SubmissionSerializer,ClassHomeworkSerializer,HomeworkItemSerializer
+from ..models import Submission,ClassHomework,Homework_item
 import json
 from django.views.decorators.csrf import csrf_exempt
 from account.models import Myclass
@@ -15,14 +15,15 @@ from django.forms.models import model_to_dict
 #@api_view(["GET","POST"])
 #@login_required      todo
 @csrf_exempt
-def post(request,class_name,problem_id):
+def post(request):
     
     
-    problem_id=problem_id
-    class_name=class_name
+
     #code=request.POST.get("code")
     data=json.loads(request.body.decode("utf-8"))
     code=data["code"]
+    class_name=data['class_name']
+    problem_id=data['problem_id']
     
     problem_data=get_object_or_404(Problem,_id=problem_id)
     serializers=ProblemSerializers(problem_data)
@@ -87,11 +88,12 @@ def addProblemToClass(request):
     data=json.loads(request.body.decode("utf-8"))
     class_name=data["class_name"]
     problem_id=data["problem_id"]
+    homework_item=data['homeword_item']
     c=Myclass.objects.filter(class_name=class_name)
     p=Problem.objects.get(_id=problem_id)
     if c and p:
         problem_title=model_to_dict(p)["title"]
-        class_homework=ClassHomework.objects.create(class_name=class_name,problem_id=p,problem_title=problem_title)
+        class_homework=ClassHomework.objects.create(class_name=class_name,problem_id=p,problem_title=problem_title,homework_item=homework_item)
         return JsonResponse({"data":"1"})
     else:
         return JsonResponse({"data":"0"})
@@ -100,9 +102,38 @@ def addProblemToClass(request):
 def showClassProblem(request):
     data=json.loads(request.body.decode("utf-8"))
     class_name=data["class_name"]
-    data=ClassHomework.objects.filter(class_name=class_name)
+    homework_item=data['homework_item']
+    data=ClassHomework.objects.filter(class_name=class_name,homework_item=homework_item)
     serializer=ClassHomeworkSerializer(data,many=True)
     return JsonResponse(serializer.data,safe=False)
+
+@csrf_exempt
+def createHomeworkItem(request):
+    data=json.loads(request.body.decode('utf-8'))
+    class_name=data['class_name']
+    homework_item=data['homework_item']
+    homework_item_title=data['homework_item_title']
+    mylist={'class_name':class_name,'homework_item':homework_item,'home_item_title':homework_item_title}
+    #homework=Homework_item.objects.create(class_name=class_name,homework_item=homework_item)
+    serializer=HomeworkItemSerializer(data=mylist)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse({'data':1},safe=False)
+    else:
+        return JsonResponse({'data':0},safe=False)
+@csrf_exempt
+def showHomeworkItem(request):
+    data=json.loads(request.body.decode('utf-8'))
+    class_name=data['class_name']
+    try:
+        homeworkitem=Homework_item.objects.filter(class_name=class_name)
+        serializer=HomeworkItemSerializer(homeworkitem,many=True)
+        return JsonResponse(serializer.data,safe=False)
+    except:
+        return JsonResponse({'data':0},safe=False)
+
+
+
 #required join class
 @csrf_exempt
 def showSampleSubmission(request):

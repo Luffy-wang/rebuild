@@ -126,6 +126,8 @@ USE_TZ = True
 
 AUTH_USER_MODEL="account.User"
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 

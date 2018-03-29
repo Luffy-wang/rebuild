@@ -35,7 +35,7 @@ def post(request):
         return JsonResponse({"data":1},safe=False)  #todo modify 
     else:
         return JsonResponse({"data":0},safe=False)
-
+@login_required
 def get(request):
     problem=Problem.objects.all()
     serializer=ProblemSerializers(problem,many=True)
@@ -50,9 +50,12 @@ def problem_create_list(request):
     return render(request,"problem/indexTest.html")
     
 
-@api_view(["GET","POST"])
-def problem_detail(request,class_name,problem_id):
+
+@csrf_exempt
+def problem_detail(request):
     #problem_id=request.GET.get("problem_id")
+    data=json.loads(request.body.decode('utf-8'))
+    problem_id=data["problem_id"]
     if not problem_id:
         return HttpResponse("problem id is required")
     problem_data=get_object_or_404(Problem,_id=problem_id)
