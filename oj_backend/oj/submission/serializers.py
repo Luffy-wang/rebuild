@@ -2,11 +2,12 @@ from rest_framework import serializers
 from .models import Submission,Homework_item
 
 class SubmissionSerializer(serializers.Serializer):
-    problem_id=serializers.IntegerField()
+    problem_id=serializers.CharField()
     #create_time=serializers.DateTimeField(auto_now_add=True)
     class_name=serializers.CharField()
+    homework_item=serializers.CharField()
     #user_name=serializers.CharField()
-    user_id=serializers.IntegerField()
+    user_id=serializers.CharField()
     code=serializers.CharField()
     result=serializers.CharField()
     language=serializers.CharField()

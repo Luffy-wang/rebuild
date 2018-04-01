@@ -74,9 +74,9 @@ def create_class(request):
     else:
         c=Myclass.objects.filter(class_member=u)
         if c:
-            return JsonResponse({"data":0})
+            return JsonResponse({"data":0})#already existed
         else:
-            myclass=Myclass.objects.create(class_name=class_name,class_member=u)
+            myclass=Myclass.objects.create(class_name=class_name,class_member=u,is_activity=True)
             return JsonResponse({"data":1})
     
 #required admin

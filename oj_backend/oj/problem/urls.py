@@ -4,7 +4,7 @@ from .views import admin
 
 
 urlpatterns=[
-    path("list/",admin.get,name="problemlist"),#show all the problem
+    path("list",admin.get,name="problemlist"),#show all the problem
     path("create",admin.post,name="problem"),#create problem need _id(problem_id),tag,title,description of three ,time_limit,memory_limit,test_case_id
     #path("test",admin.test,name="name"),
     path("upload",admin.UploadTestCase,name="upload"),#upload test_case,need _id(problem_id),test_case_id equal problem_id

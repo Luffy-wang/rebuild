@@ -13,9 +13,11 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-@api_view(["GET","POST"])
-#@login_required
+
 @csrf_exempt
+#@api_view(["GET","POST"])
+#@login_required
+
 def post(request):
     data=json.loads(request.body.decode("utf-8"))
     
@@ -29,13 +31,16 @@ def post(request):
     if not tags:
         return HttpResponse("tag is required")
         
-    serializer=ProblemSerializers(data=request.data)
+    serializer=ProblemSerializers(data=data)
+    
     if serializer.is_valid():
         serializer.save()
         return JsonResponse({"data":1},safe=False)  #todo modify 
     else:
+        return JsonResponse(serializer.errors,safe=False)
         return JsonResponse({"data":0},safe=False)
-@login_required
+#@login_required
+@csrf_exempt
 def get(request):
     problem=Problem.objects.all()
     serializer=ProblemSerializers(problem,many=True)
