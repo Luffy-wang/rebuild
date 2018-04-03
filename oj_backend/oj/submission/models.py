@@ -21,10 +21,14 @@ class Submission(models.Model):
     class Meta:
         db_table="Submission"
     
+class Homework_item(models.Model):
+    class_name=models.CharField(max_length=20)
+    homework_item=models.CharField(max_length=20)
+    homework_item_title=models.CharField(max_length=30)
 
 class ClassHomework(models.Model):
     class_name=models.CharField(max_length=20)
-    homework_item=models.CharField(max_length=20,default=0)
+    homework_item=models.ForeignKey(Homework_item,on_delete=models.CASCADE,related_name="homework")
     problem_id=models.ForeignKey(Problem,on_delete=models.CASCADE)
     problem_title=models.CharField(max_length=30,default="a")
 
@@ -33,8 +37,5 @@ class ClassHomework(models.Model):
     def problem_real_id(self):
         return self.problem_id._id
 
-class Homework_item(models.Model):
-    class_name=models.CharField(max_length=20)
-    homework_item=models.CharField(max_length=20)
-    homework_item_title=models.CharField(max_length=30)
+
     

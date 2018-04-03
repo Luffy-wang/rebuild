@@ -11,4 +11,6 @@ urlpatterns=[
     path('createhomework',admin.createHomeworkItem,name="createhomework"),
     path('showhomeworkitem',admin.showHomeworkItem,name='showhomeworkitem'),
     path("testuserobject",admin.testuserobject,name="testuserobjects"),
+    path("deleteproblemtoclass",admin.deleteProblemToClass,name="deleteproblemtoclass"),
+    path("deletehomeworkitem",admin.deleteHomeworkitem,name="deletehomeworkitem"),
 ]

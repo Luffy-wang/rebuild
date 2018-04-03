@@ -53,8 +53,18 @@ def test(request):
 @login_required(login_url="/account/login")
 def problem_create_list(request):
     return render(request,"problem/indexTest.html")
+@csrf_exempt
+def delete_problem(request):
+    data=json.loads(request.body.decode("utf-8"))
     
-
+    
+    for item in data["problem_id"]:
+        p=Problem.objects.get(_id=item)
+        if p:
+            problem=Problem.objects.filter(_id=item).delete()
+            return JsonResponse({"data":1},safe=False)
+        else:
+            return JsonResponse({"data":0},safe=False)
 
 @csrf_exempt
 def problem_detail(request):

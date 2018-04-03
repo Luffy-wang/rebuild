@@ -10,4 +10,5 @@ urlpatterns=[
     path("upload",admin.UploadTestCase,name="upload"),#upload test_case,need _id(problem_id),test_case_id equal problem_id
     path("problemdetail",admin.problem_detail,name="problem_detail"),#show problem_detail need problem_id,class_name not use but need
    # path("create_problem_list",admin.problem_create_list,name="create_problem_list"),
+    path("deleteproblem",admin.delete_problem,name="deleteproblem"),
 ]
