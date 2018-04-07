@@ -21,4 +21,5 @@ urlpatterns = [
     path("problem/",include("problem.urls")),#must add '/',
     path("submission/",include("submission.urls")),
     path("account/",include("account.urls")),
+    path("myclass/",include("myclass.urls")),
 ]
