@@ -22,4 +22,5 @@ urlpatterns = [
     path("submission/",include("submission.urls")),
     path("account/",include("account.urls")),
     path("myclass/",include("myclass.urls")),
+    path("homework",include("homework.urls")),
 ]

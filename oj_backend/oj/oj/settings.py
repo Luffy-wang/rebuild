@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     "problem.apps.ProblemConfig",
     "submission.apps.SubmissionConfig",
     "account.apps.AccountConfig",
-    "myclass.apps.MyclassConfig"
+    "myclass.apps.MyclassConfig",
+    "homework.apps.HomeworkConfig",
     #"corsheaders",
 ]
 

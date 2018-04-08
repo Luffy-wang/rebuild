@@ -6,11 +6,12 @@ from django.shortcuts import render,get_object_or_404
 from submission.languages import c_lang_config
 from problem.models import Problem
 from problem.serializers import ProblemSerializers
-from ..serializers import SubmissionSerializer,ClassHomeworkSerializer,HomeworkItemSerializer
-from ..models import Submission,ClassHomework,Homework_item
+from ..serializers import SubmissionSerializer,
+from ..models import Submission
 import json
 from django.views.decorators.csrf import csrf_exempt
-from account.models import Myclass,User
+from account.models import User
+from myclass.models import Myclass
 from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
 #@api_view(["GET","POST"])
@@ -89,101 +90,101 @@ def get(request):
     return render(request,"submission/submission_list.html")
 
 # required teacher
-@csrf_exempt
-def addProblemToClass(request):
-    data=json.loads(request.body.decode("utf-8"))
-    # user=request.user.user_id
-    # myclass=Myclass.objects.get(class_member=user)
-    # myclass=model_to_dict(myclass)
-    # class_name=myclass["class_name"]
-    class_name=data["class_name"]
+# @csrf_exempt
+# def addProblemToClass(request):
+#     data=json.loads(request.body.decode("utf-8"))
+#     # user=request.user.user_id
+#     # myclass=Myclass.objects.get(class_member=user)
+#     # myclass=model_to_dict(myclass)
+#     # class_name=myclass["class_name"]
+#     class_name=data["class_name"]
 
-    homework_item=data['homework_item']
-    #return JsonResponse(data["problem"],safe=False)
-    for item in data["problem"]:
-        problem_id=item
-        #return JsonResponse({'data':problem_id},safe=False)
-        c=Myclass.objects.filter(class_name=class_name)
-        p=Problem.objects.get(_id=problem_id)
-        homework_item=Homework_item.objects.get(homework_item=homework_item)
+#     homework_item=data['homework_item']
+#     #return JsonResponse(data["problem"],safe=False)
+#     for item in data["problem"]:
+#         problem_id=item
+#         #return JsonResponse({'data':problem_id},safe=False)
+#         c=Myclass.objects.filter(class_name=class_name)
+#         p=Problem.objects.get(_id=problem_id)
+#         homework_item=Homework_item.objects.get(homework_item=homework_item)
 
-        if c and p:
-            problem_title=model_to_dict(p)["title"]
-            class_homework=ClassHomework.objects.create(class_name=class_name,problem_id=p,problem_title=problem_title,homework_item=homework_item)
-        else:
-            return JsonResponse({"data":"0"})
-    return JsonResponse({"data":1},safe=False)
+#         if c and p:
+#             problem_title=model_to_dict(p)["title"]
+#             class_homework=ClassHomework.objects.create(class_name=class_name,problem_id=p,problem_title=problem_title,homework_item=homework_item)
+#         else:
+#             return JsonResponse({"data":"0"})
+#     return JsonResponse({"data":1},safe=False)
 
-@csrf_exempt
-def deleteProblemToClass(request):
-    data=json.loads(request.body.decode("utf-8"))
-    homework_item=data["homework_item"]
-    for item in data["problem"]:
-        problem_id=item
-        p=Problem.objects.get(_id=problem_id)
-        if p:
-            class_homework=ClassHomework.objects.filter(problem_id=problem_id).delete()
-        else:
-            return JsonResponse({"data":0},safe=False)  
-    return JsonResponse({"data":1},safe=False)
-@csrf_exempt
-def deleteHomeworkitem(request):
-    data=json.loads(request.body.decode("utf-8"))
-    homework_item=data["homework_item"]
-    h=Homework_item.objects.get(homework_item=homework_item)
-    if h:
-        Homework_item.objects.filter(homework_item=homework_item).delete()
-        return JsonResponse({"data":1},safe=False)
-    else:
-        return JsonResponse({"data":0},safe=False)
+# @csrf_exempt
+# def deleteProblemToClass(request):
+#     data=json.loads(request.body.decode("utf-8"))
+#     homework_item=data["homework_item"]
+#     for item in data["problem"]:
+#         problem_id=item
+#         p=Problem.objects.get(_id=problem_id)
+#         if p:
+#             class_homework=ClassHomework.objects.filter(problem_id=problem_id).delete()
+#         else:
+#             return JsonResponse({"data":0},safe=False)  
+#     return JsonResponse({"data":1},safe=False)
+# @csrf_exempt
+# def deleteHomeworkitem(request):
+#     data=json.loads(request.body.decode("utf-8"))
+#     homework_item=data["homework_item"]
+#     h=Homework_item.objects.get(homework_item=homework_item)
+#     if h:
+#         Homework_item.objects.filter(homework_item=homework_item).delete()
+#         return JsonResponse({"data":1},safe=False)
+#     else:
+#         return JsonResponse({"data":0},safe=False)
 
 
-@csrf_exempt
-def showClassProblem(request):
-    data=json.loads(request.body.decode("utf-8"))
-    user=request.user.user_id
-    myclass=Myclass.objects.get(class_member=user)
-    myclass=model_to_dict(myclass)
-    class_name=myclass["class_name"]
-    homework_item=data['homework_item']
-    data=ClassHomework.objects.filter(class_name=class_name,homework_item=homework_item)
-    serializer=ClassHomeworkSerializer(data,many=True)
-    return JsonResponse(serializer.data,safe=False)
+# @csrf_exempt
+# def showClassProblem(request):
+#     data=json.loads(request.body.decode("utf-8"))
+#     user=request.user.user_id
+#     myclass=Myclass.objects.get(class_member=user)
+#     myclass=model_to_dict(myclass)
+#     class_name=myclass["class_name"]
+#     homework_item=data['homework_item']
+#     data=ClassHomework.objects.filter(class_name=class_name,homework_item=homework_item)
+#     serializer=ClassHomeworkSerializer(data,many=True)
+#     return JsonResponse(serializer.data,safe=False)
 
-@csrf_exempt
-def createHomeworkItem(request):
-    data=json.loads(request.body.decode('utf-8'))
-    user=request.user.user_id
-    myclass=Myclass.objects.get(class_member=user)
-    myclass=model_to_dict(myclass)
-    class_name=myclass['class_name']
-    #class_name=data["class_name"]
-    homework_item=data['homework_item']
-    homework_item_title=data['homework_item_title']
-    mylist={'class_name':class_name,'homework_item':homework_item,"homework_item_title":homework_item_title}
-    #homework=Homework_item.objects.create(class_name=class_name,homework_item=homework_item)
-    serializer=HomeworkItemSerializer(data=mylist)
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse({'data':1},safe=False)
-    else:
+# @csrf_exempt
+# def createHomeworkItem(request):
+#     data=json.loads(request.body.decode('utf-8'))
+#     user=request.user.user_id
+#     myclass=Myclass.objects.get(class_member=user)
+#     myclass=model_to_dict(myclass)
+#     class_name=myclass['class_name']
+#     #class_name=data["class_name"]
+#     homework_item=data['homework_item']
+#     homework_item_title=data['homework_item_title']
+#     mylist={'class_name':class_name,'homework_item':homework_item,"homework_item_title":homework_item_title}
+#     #homework=Homework_item.objects.create(class_name=class_name,homework_item=homework_item)
+#     serializer=HomeworkItemSerializer(data=mylist)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return JsonResponse({'data':1},safe=False)
+#     else:
         
-        return JsonResponse({'data':0},safe=False)
-@csrf_exempt
-def showHomeworkItem(request):
-    #data=json.loads(request.body.decode('utf-8'))
-    if not User.is_teacher(request.user) or User.is_admin(request.user):
-        teacheruser=Myclass.objects.get(class_member=request.user.user_id)
-        teacheruser=model_to_dict(teacheruser)
-        class_name=teacheruser["class_name"]
-    else:
-        return JsonResponse({"data":0},safe=False)
-    try:
-        homeworkitem=Homework_item.objects.filter(class_name=class_name)
-        serializer=HomeworkItemSerializer(homeworkitem,many=True)
-        return JsonResponse(serializer.data,safe=False)
-    except:
-        return JsonResponse({'data':0},safe=False)
+#         return JsonResponse({'data':0},safe=False)
+# @csrf_exempt
+# def showHomeworkItem(request):
+#     #data=json.loads(request.body.decode('utf-8'))
+#     if not User.is_teacher(request.user) or User.is_admin(request.user):
+#         teacheruser=Myclass.objects.get(class_member=request.user.user_id)
+#         teacheruser=model_to_dict(teacheruser)
+#         class_name=teacheruser["class_name"]
+#     else:
+#         return JsonResponse({"data":0},safe=False)
+#     try:
+#         homeworkitem=Homework_item.objects.filter(class_name=class_name)
+#         serializer=HomeworkItemSerializer(homeworkitem,many=True)
+#         return JsonResponse(serializer.data,safe=False)
+#     except:
+#         return JsonResponse({'data':0},safe=False)
 @csrf_exempt
 def testuserobject(request):
     #return JsonResponse({"data":0},safe=False)

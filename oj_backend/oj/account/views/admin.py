@@ -58,26 +58,26 @@ def mylogut(request):
     return HttpResponse("logout success")
 
 #if admin want to use this function.it should give the teacher id
-@csrf_exempt
-@login_required
-def create_class(request):
-    data=json.loads(request.body.decode("utf-8"))
-    class_name=data["class_name"]
-    user_id=data["user_id"]
+# @csrf_exempt
+# @login_required
+# def create_class(request):
+#     data=json.loads(request.body.decode("utf-8"))
+#     class_name=data["class_name"]
+#     user_id=data["user_id"]
    
-    u=User.objects.get(user_id=user_id)
-    if User.is_teacher(u):
-        myclass=Myclass.objects.create(class_name=class_name,class_admin=u,class_member=u,is_activity=True)
-        return JsonResponse({"data":1})
-    elif User.is_admin(u):
-        return HttpResponse("error action")
-    else:
-        c=Myclass.objects.filter(class_member=u)
-        if c:
-            return JsonResponse({"data":0})#already existed
-        else:
-            myclass=Myclass.objects.create(class_name=class_name,class_member=u,is_activity=True)
-            return JsonResponse({"data":1})
+#     u=User.objects.get(user_id=user_id)
+#     if User.is_teacher(u):
+#         myclass=Myclass.objects.create(class_name=class_name,class_admin=u,class_member=u,is_activity=True)
+#         return JsonResponse({"data":1})
+#     elif User.is_admin(u):
+#         return HttpResponse("error action")
+#     else:
+#         c=Myclass.objects.filter(class_member=u)
+#         if c:
+#             return JsonResponse({"data":0})#already existed
+#         else:
+#             myclass=Myclass.objects.create(class_name=class_name,class_member=u,is_activity=True)
+#             return JsonResponse({"data":1})
     
 #required admin
 @csrf_exempt
@@ -100,39 +100,40 @@ def modify_user_type_to_teacher(request):
 #get function 
 # login required 
 # teacher required?
-@csrf_exempt
-@login_required
-def show_class_member_or_class(request):
-    data=json.loads(request.body.decode("utf-8"))
+# @csrf_exempt
+# @login_required
+# def show_class_member_or_class(request):
+#     data=json.loads(request.body.decode("utf-8"))
     
-    user_id=data["user_id"]
-    u=Myclass.objects.get(class_member=user_id)
-    if u.is_activity:
-        u=model_to_dict(u)
-        class_member=Myclass.objects.filter(class_name=u["class_name"])
-        serializer=MyclassSerializer(class_member,many=True)
+#     user_id=data["user_id"]
+#     u=Myclass.objects.get(class_member=user_id)
+#     if u.is_activity:
+#         u=model_to_dict(u)
+#         class_member=Myclass.objects.filter(class_name=u["class_name"])
+#         serializer=MyclassSerializer(class_member,many=True)
         
-        return JsonResponse(serializer.data,safe=False)
-    else:
-        class_name=Myclass.objects.values("class_name").distinct()
-        #serializer=MyclassSerializer(class_name,many=True)
-        serializer=ShowClassSerializer(class_name,many=True)
+#         return JsonResponse(serializer.data,safe=False)
+#     else:
+#         class_name=Myclass.objects.values("class_name").distinct()
+#         #serializer=MyclassSerializer(class_name,many=True)
+#         serializer=ShowClassSerializer(class_name,many=True)
         
-        return JsonResponse(serializer.data,safe=False)
+#        return JsonResponse(serializer.data,safe=False)
 #teacher required
-@csrf_exempt
-def not_join_the_class(request):
-    user=Myclass.objects.filter(is_activity=False)
-    serializer=MyclassSerializer(user,many=True)
-    return JsonResponse(serializer.data,safe=False)
+#todo
+# @csrf_exempt
+# def not_join_the_class(request):
+#     user=Myclass.objects.filter(is_activity=False)
+#     serializer=MyclassSerializer(user,many=True)
+#     return JsonResponse(serializer.data,safe=False)
 
-@csrf_exempt
-@login_required
-def join_the_class(request):
-    data=json.loads(request.body.decode("utf-8"))
-    student_id=data["student_id"]
-    Myclass.objects.filter(class_member=student_id).update(is_activity=True)
-    return JsonResponse({"data":1})
+# @csrf_exempt
+# @login_required
+# def join_the_class(request):
+#     data=json.loads(request.body.decode("utf-8"))
+#     student_id=data["student_id"]
+#     Myclass.objects.filter(class_member=student_id).update(is_activity=True)
+#     return JsonResponse({"data":1})
 @csrf_exempt
 def showclassname(request):
     data=json.loads(request.body.decode('utf-8'))
