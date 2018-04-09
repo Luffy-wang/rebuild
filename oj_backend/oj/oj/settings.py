@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "problem.apps.ProblemConfig",
     "submission.apps.SubmissionConfig",
     "account.apps.AccountConfig",
+    "myclass.apps.MyclassConfig",
+    "homework.apps.HomeworkConfig",
     #"corsheaders",
 ]
 
@@ -54,6 +56,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #"corsheaders.middleware.CorsMiddleware",
 ]
+
+# AUTHENTICATION_BACKENDS = (
+#         'django.contrib.auth.backends.ModelBackend',
+#     )
+
+#AUTH_USER_MODEL ="account.models.User"
 
 ROOT_URLCONF = 'oj.urls'
 
