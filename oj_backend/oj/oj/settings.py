@@ -57,6 +57,12 @@ MIDDLEWARE = [
     #"corsheaders.middleware.CorsMiddleware",
 ]
 
+# AUTHENTICATION_BACKENDS = (
+#         'django.contrib.auth.backends.ModelBackend',
+#     )
+
+#AUTH_USER_MODEL ="account.models.User"
+
 ROOT_URLCONF = 'oj.urls'
 
 TEMPLATES = [

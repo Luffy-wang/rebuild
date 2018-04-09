@@ -12,6 +12,6 @@ urlpatterns=[
     # #path("shownotjoinclass",admin.not_join_the_class,name="showNotJoinClass"),#notice required teacher
     # #path("joinclass",admin.join_the_class,name="joinclass"),#notice need user_id
     # path('showclassname',admin.showclassname,name="showclassname"),
-    url(r"^loginorlogout/",UserAbout.as_view(),name="userabout"),
-    url(r"^userregister/",UserRegister.as_view(),name="userregister"),
+    url(r"^loginorlogout/?$",UserAbout.as_view(),name="userabout"),
+    url(r"^userregister/?$",UserRegister.as_view(),name="userregister"),
 ]

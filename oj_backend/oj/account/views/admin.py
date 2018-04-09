@@ -22,9 +22,11 @@ class UserAbout(MyBaseView):
     def post(self,request):
         data=request.data
         user_id=data.get("userid")
-        password=data.get("password")
-        user=authenticate(request,user_id=user_id,password=password)
         
+        password=data.get("password")
+        
+        user=authenticate(request,user_id=user_id,password=password)
+        #return HttpResponse(user)
         if user is not None:
             if request.user.is_authenticated:
                 return JsonResponse({'data':0},safe=False)#already login
@@ -32,7 +34,7 @@ class UserAbout(MyBaseView):
                 login(request,user)
                 return JsonResponse({"data":1,"user_id":user_id},safe=False)
         else:
-            return JsonResponse({"data":0},safe=False)
+            return JsonResponse({"data":12},safe=False)
 
 class ModifyUser(MyBaseView):
     def post(self,request):
