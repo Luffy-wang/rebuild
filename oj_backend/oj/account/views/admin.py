@@ -12,13 +12,15 @@ from django.contrib import admin
 from django.forms.models import model_to_dict
 from utils.api.utils import MyBaseView
 from myclass.models import Myclass
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 class UserAbout(MyBaseView):
     def get(self,request):
         logout(request)
         return HttpResponse("logout success")
-
+    @method_decorator(ensure_csrf_cookie)
     def post(self,request):
         data=request.data
         user_id=data.get("userid")

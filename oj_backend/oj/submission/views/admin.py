@@ -18,6 +18,8 @@ from django.contrib.auth.decorators import login_required
 import os
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.core.cache import cache
+from judgermanage.dispatch import JudgerManageBase
 #@api_view(["GET","POST"])
 #@login_required      todo
 # @csrf_exempt
@@ -27,9 +29,15 @@ class SubmissionClass(MyBaseView):
     @method_decorator(ensure_csrf_cookie)
     def get(self,request):
         data=request.data
+       
+        # cache.set("name2","kwq",timeout=40)
+        # name=cache.get("name1")
+        # return HttpResponse(name)
         user_id=request.user.user_id
+        
         problem_id=data.get('problem_id')
         homework_item=data.get('homework_item')
+        
         #problem_title=Problem.objects.get(_id=problem_id)
         if problem_id is '':
             submission=Submission.objects.filter(user_id=user_id)
@@ -45,7 +53,9 @@ class SubmissionClass(MyBaseView):
                 serializer=SubmissionSerializer(submission,many=True)
                 return JsonResponse(serializer.data,safe=False)
 
-    @method_decorator(ensure_csrf_cookie)
+
+
+    #@method_decorator(ensure_csrf_cookie)
     def post(self,request):
         data=request.data
         code=data.get("code")
@@ -59,9 +69,9 @@ class SubmissionClass(MyBaseView):
         max_memory=serializers.data["memory_limit"]
         test_case_id=serializers.data["test_case_id"]
         problem_id1=serializers.data['_id']
-        problem_language=serializers.data["language"]
+        problem_language=serializers.data["tag"]
 
-        send=os.environ(sendToken)
+        send="123456"#os.environ(sendToken)
         token=hashlib.sha256(send.encode("utf-8")).hexdigest()
         kwargs={"headers":{"X-Judge-Server-Token":token,
                         "Content-Type":"application/json"}}
@@ -70,7 +80,7 @@ class SubmissionClass(MyBaseView):
         "language_config":c_lang_config,#todo
         "src":code,
         "max_cpu_time":max_cpu_time,
-        "max_memory":max_memory,#todo eddit memory
+        "max_memory":1024*1024*max_memory,#todo eddit memory
         "test_case_id":test_case_id,#test_case_id,
         "output":True,
         "spj_version":None,
@@ -79,6 +89,7 @@ class SubmissionClass(MyBaseView):
         }
 
         kwargs["data"]=json.dumps(data)
+        return JudgerManageBase(**kwargs).judger_dispatch()
         r=requests.post("http://127.0.0.1:8088/judge",**kwargs).json()
 
         try:
@@ -101,6 +112,9 @@ class SubmissionClass(MyBaseView):
         if serializers1.is_valid():
             serializers1.save()
         return JsonResponse(serializers1.data,safe=False)
+
+
+
 
 # def post(request):
     
