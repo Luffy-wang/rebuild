@@ -3,6 +3,19 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.utils.decorators import method_decorator
+from django_redis import get_redis_connection
+from django_redis.cache import RedisCache
+from django_redis.client.default import DefaultClient
+from django.core.cache import cache
+
+class MyRedis(DefaultClient):
+    def __getattr__(self,item):
+        client=self.get_client(write=True)
+        return getattr(client,item)
+
+    # def get_incr(self,key,count=1):
+    #     client=self.get_client(write=True)
+    #     return client.get_incr()
 
 
 class JSONParse(object):
