@@ -14,8 +14,4 @@ before_script:
 script:
   - python manage.py makemigrations
   - python manage.py migrate
-  - python manage.py shell
-  - setup_test_environment()
-  - client=Client()
-  - response=client.get("account/loginorlogout")
-  - response.status_code
+  - python manage.py shell<test.py
