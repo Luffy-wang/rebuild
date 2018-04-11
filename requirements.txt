@@ -3,3 +3,4 @@ django-redis==4.9.0
 djangorestframework
 psycopg2-binary==2.7.4
 requests
+xlrd
