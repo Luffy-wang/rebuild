@@ -1,35 +1,39 @@
 from django.core.cache import cache
 from django.http import HttpResponse,JsonResponse
 import requests
+from django_redis import get_redis_connection
+import json
+import re
 #from django.
-
+#todo test
 class JudgerManageBase(object):
     def __init__(self,**data):
         self.data=data
         self.i=0
         #self.judgercount=cache.set("judgerservercount",self.i)
+    con=get_redis_connection("default")
         
-    def chose_judger(self):
-        self.judgercount=cache.set("judgerservercount",self.i)
-        cache.persist("judgerservercount")
+    
 
-        
+    def continue_process(self):
+        if cache.llen("wattingsqueue"):
+            from JudgerManage.dispatch import JudgerManageBase
+            data=self.con.rpop("wattingsqueue")
+            JudgerManageBase(data).judger_dispatch()
+
     def judger_dispatch(self):
-        #return JsonResponse(self.data,safe=False)
         
         
-        self.judgercount=cache.get("judgerservercount")
-        if self.judgercount<0:
-            cache.set("judgerservercount",self-1)
-            cache.persist("judgerservercount")
-            # send=os.environ(sendToken)
-            # token=hashlib.sha256(send.encode("utf-8")).hexdigest()
-            # kwargs={"headers":{"X-Judge-Server-Token":token,
-            #             "Content-Type":"application/json"}}
-            r=requests.post("http://127.0.0.1:8088/judge",**self.data).json()
-            cache.set("judgerservercount",self.i+1)
-            cache.persist("judgerservercount")
-            return JsonResponse(r,safe=False)
-        else:
-            self.judgercount=cache.set("judgerservercount",self.i+1)
-            return JsonResponse({"data":0},safe=False)
+        self.con.lpush("wattingsqueue",self.data)
+        self.con.persist("wattingsqueue")
+        #senddata=self.con.rpop("wattingsqueue").decode("utf-8")
+        senddata=eval(self.con.rpop("wattingsqueue"))
+        # return JsonResponse(senddata,safe=False)
+        #load = json.loads(senddata)
+        #return JsonResponse(fromdata,safe=False)
+        
+        
+        r=requests.post("http://127.0.0.1:8088/judge",**senddata).json()
+        
+        return JsonResponse(r,safe=False)
+       

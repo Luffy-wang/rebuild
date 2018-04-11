@@ -14,7 +14,11 @@ from utils.api.utils import MyBaseView
 from myclass.models import Myclass
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-
+from django.views.generic import View
+import os,time
+import xlrd
+from django.core.cache import cache
+from django_redis import get_redis_connection
 
 class UserAbout(MyBaseView):
     def get(self,request):
@@ -43,17 +47,37 @@ class ModifyUser(MyBaseView):
         pass
 
 
-class UserRegister(MyBaseView):
+class UserRegister(View):#MyBaseView):
+    con=get_redis_connection("default")
+
+    
+    @method_decorator(ensure_csrf_cookie)
     def post(self,request):
-        if  request.user.is_authenticated:   #to verify 
-            return JsonResponse({"data":1},safe=False)
-        else:
-            data=request.data
-            user_id=data.get("user_id")      
-            name=data.get("name")
-            password=data.get("password")
-            user=User.objects.create_user(user_id=user_id,user_name=name,password=password)
-            return JsonResponse({"data":1},safe=False)
+        file=request.FILES["userinformation"]
+        user_excel=os.path.join("/tmp","user.excel")
+        with open(user_excel,"wb") as f:
+            for chunk in file:
+                f.write(chunk)
+        data=xlrd.open_workbook("/tmp/user.excel")
+        table=data.sheets()[0]
+        self.nrows=table.nrows
+        ncols=table.ncols
+        for rows in range(self.nrows):
+            cr=table.row_values(rows)
+            mapmap={"user_id":cr[0],"user_name":cr[1],"password":cr[2]}
+            self.con.hmset(rows,mapmap)
+            self.con.persist(rows)
+        #return JsonResponse({"data":1},safe=False)
+            data_id=self.con.hget(rows,"user_id").decode("utf-8")
+            data_name=self.con.hget(rows,"user_name").decode("utf-8")
+            data_password=self.con.hget(rows,"password").decode("utf-8")
+
+            try:
+                tt=User.objects.create_user(user_id=data_id,user_name=data_name,password=data_password)
+            except:
+                return HttpResponse("error")
+        return HttpResponse("1")
+            
 
 
 
