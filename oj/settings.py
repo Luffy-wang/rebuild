@@ -97,6 +97,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'oj.wsgi.application'
 
 
+CELERY_BROKER_URL='redis://localhost:6379/0'
+
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -108,6 +110,7 @@ DATABASES = {
         'NAME': "test",
         "PORT":"5432",
         "USER":"postgres",
+        "CONN_MAX_AGE":300,
     }
 }
 

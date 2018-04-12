@@ -19,8 +19,10 @@ import os,time
 import xlrd
 from django.core.cache import cache
 from django_redis import get_redis_connection
+from ..tasks import butch_create
 
 class UserAbout(MyBaseView):
+    @method_decorator(ensure_csrf_cookie)
     def get(self,request):
         logout(request)
         return HttpResponse("logout success")
@@ -32,7 +34,7 @@ class UserAbout(MyBaseView):
         password=data.get("password")
         
         user=authenticate(request,user_id=user_id,password=password)
-        #return HttpResponse(user)
+        return HttpResponse(user)
         if user is not None:
             if request.user.is_authenticated:
                 return JsonResponse({'data':0},safe=False)#already login
@@ -64,16 +66,20 @@ class UserRegister(View):#MyBaseView):
         ncols=table.ncols
         for rows in range(self.nrows):
             cr=table.row_values(rows)
-            mapmap={"user_id":cr[0],"user_name":cr[1],"password":cr[2]}
-            self.con.hmset(rows,mapmap)
-            self.con.persist(rows)
-        #return JsonResponse({"data":1},safe=False)
-            data_id=self.con.hget(rows,"user_id").decode("utf-8")
-            data_name=self.con.hget(rows,"user_name").decode("utf-8")
-            data_password=self.con.hget(rows,"password").decode("utf-8")
+        #     mapmap={"user_id":cr[0],"user_name":cr[1],"password":cr[2]}
+        #     self.con.hmset(rows,mapmap)
+        #     self.con.persist(rows)
+        # #return JsonResponse({"data":1},safe=False)
+        #     data_id=self.con.hget(rows,"user_id").decode("utf-8")
+        #     data_name=self.con.hget(rows,"user_name").decode("utf-8")
+        #     data_password=self.con.hget(rows,"password").decode("utf-8")
 
+            data_id=cr[0]
+            data_name=cr[1]
+            data_password=cr[2]
+            #return HttpResponse(data_password)
             try:
-                tt=User.objects.create_user(user_id=data_id,user_name=data_name,password=data_password)
+                butch_create.delay(user_id=data_id,user_name=data_name,password=data_password)
             except:
                 return HttpResponse("error")
         return HttpResponse("1")
