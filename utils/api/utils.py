@@ -7,6 +7,7 @@ from django_redis import get_redis_connection
 from django_redis.cache import RedisCache
 from django_redis.client.default import DefaultClient
 from django.core.cache import cache
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 
 class MyRedis(DefaultClient):
     def __getattr__(self,item):
@@ -44,6 +45,18 @@ class MyBaseView(View):
             return HttpResponse("error")
         #try:
         return super(MyBaseView,self).dispatch(request,*args,**kwargs)
+
+    def paginator_data(self,query,page):
+        #_page=int(request.GET.get("page"))
+        _paginator_data=Paginator(query,10)
+        try:
+            page_data=_paginator_data.page(page)
+        except PageNotAnInteger:
+            page_data=_paginator_data.page(1)
+        except EmptyPage:
+            page_data=_paginator_data.page(1)
+
+        return page_data
         # except Exception as e:
         #     return HttpResponse(e)
 

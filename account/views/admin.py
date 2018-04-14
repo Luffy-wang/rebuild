@@ -48,6 +48,15 @@ class ModifyUser(MyBaseView):
     def post(self,request):
         pass
 
+class ShowUser(MyBaseView):
+    def get(self,request):
+        page=request.data.get("page")
+        user=User.objects.all()
+        #return HttpResponse(user)
+        
+        data=super(ShowUser,self).paginator_data(user,page)
+        return HttpResponse(data)#,safe=False)
+
 
 class UserRegister(View):#MyBaseView):
     con=get_redis_connection("default")

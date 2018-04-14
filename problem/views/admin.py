@@ -56,10 +56,12 @@ class ProblemDetail(MyBaseView):
     def get(self,request):
         data=request.data
         problem_id=data.get("problem_id")
+        #page=data.get("page")
         if not problem_id:
             return HttpResponse("problem id is required")
         problem_data=get_object_or_404(Problem,_id=problem_id)
         serializer=ProblemSerializers(problem_data)
+        #return_data=super(ProblemDetail,self).paginator(serializer.data,page)
         return JsonResponse(serializer.data,safe=False)
     @method_decorator(ensure_csrf_cookie)
     def delete(self,request):

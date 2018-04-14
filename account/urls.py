@@ -1,5 +1,5 @@
 from django.urls import path
-from .views.admin import UserAbout,ModifyUser,UserRegister
+from .views.admin import UserAbout,ModifyUser,UserRegister,ShowUser
 from django.conf.urls import url
 
 urlpatterns=[
@@ -14,4 +14,5 @@ urlpatterns=[
     # path('showclassname',admin.showclassname,name="showclassname"),
     url(r"^loginorlogout/?$",UserAbout.as_view(),name="userabout"),
     url(r"^userregister/?$",UserRegister.as_view(),name="userregister"),
+    url(r"show/?$",ShowUser.as_view(),name="show"),
 ]
