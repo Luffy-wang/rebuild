@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+   <head>
+        <meta charset="UTF-8">
+      <title>Bootstrap dsa</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <!-- 引入 Bootstrap -->
+      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+   </head>
+   <body>
+        <!-- {% csrf_token %} -->
+        <div class="container">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <nav class="navbar navbar-default" role="navigation">
+                            <div class="navbar-header">
+                                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">OJ</a>
+                            </div>
+                            
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                <ul class="nav navbar-nav">
+                                    <li class="active">
+                                         <a href="/problem/index">problem</a>
+                                    </li>
+                                    <li>
+                                         <a href="#">submission</a>
+                                    
+                                </ul>
+                                
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li>
+                                         <a href="#">Link</a>
+                                    </li>
+                                    <li class="dropdown">
+                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                 <a href="#">Action</a>
+                                            </li>
+                                            <li>
+                                                 <a href="#">Another action</a>
+                                            </li>
+                                            <li>
+                                                 <a href="#">Something else here</a>
+                                            </li>
+                                            <li class="divider">
+                                            </li>
+                                            <li>
+                                                 <a href="#">Separated link</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                        </nav>
+                        <ol class="breadcrumb">
+                                
+                            </ol>
+                            
+
+                        <div class="jumbotron" id='problemcontent'>
+
+                            <table class="table">
+                                    <caption>problem list</caption>
+                                    <thead>
+                                    <tr>
+                                        <th>id</th>
+                                        <th>problem</th>
+                                        <th>tag</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody >
+                                    </tbody>
+                                </table>
+
+
+                                <ul class="pagination">
+                                    <li><a href="javascript:problem(1)">&laquo;</a></li>
+                                {%for page in pagenum%}
+                                
+                                    
+                                
+                                    <li ><a href="javascript:problem({{forloop.counter}})">{{forloop.counter}}</a></li>
+                                    
+                                    {%endfor%}
+                                    <li><a href="javascript:problem({{forloop.counter}})"+>&raquo;</a></li>
+                                </ul>
+      
+                        </div>
+
+    
+                        
+                        
+    
+                    </div>
+                </div>
+            </div>
+      
+ 
+      <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+      </script>
+      <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <script>
+          $(function() {
+              $.ajax({
+                  type:'get',
+                  url:'http://127.0.0.1:8000/problem/showclass/?page=1',
+                  dataType:'json',
+                  success:function(data){
+                      var str='';
+                      for(var i=0;i<data.length;i++)
+                      {
+                          s="<tr><td><a href=javascript:problemdetail("+data[i]._id+")>"+data[i]._id+"</a></td><td>"+data[i].title+"</td><td>"+data[i].tag+"</td></tr>";
+                          $("tbody").append(s);
+                      }
+                  }
+              });
+
+              $("ol").html("<li><a href='/index'>Home</a></li><li><a href='/problem/index'>problem</a></li>")
+              
+          });
+
+
+      </script>
+
+      <script>
+      function problem(param){
+        $.ajax({
+          type:'get',
+          url:'http://127.0.0.1:8000/problem/showclass/?page='+param,
+          dataType:'json',
+          success:function(data){
+              
+              $("tbody").empty();
+              for(var i=0;i<data.length;i++)
+              {
+                s="<tr><td><a href=javascript:problemdetail("+data[i]._id+")>"+data[i]._id+"</a></td><td>"+data[i].title+"</td><td>"+data[i].tag+"</td></tr>";
+                  $("tbody").append(s);
+              }
+          }
+      });
+      };
+      
+      function problemdetail(param){
+        $.ajax({
+          type:'get',
+          url:'http://127.0.0.1:8000/problem/problemdetail/?problem_id='+param,
+          dataType:'json',
+          success:function(data){
+              
+              $("#problemcontent").empty();
+              $("ol").html("<li><a href='/index'>Home</a></li><li><a href='/problem/index'>problem</a></li><li>"+param+"</li>")
+                  s="<h2>title :</br><span class='label label-default'>"+data.title+"</span></h2>"+
+                  "<h2>description :</br><span class='label label-default'>"+data.description+"</span></h2>"+
+                  "<h2>input_description :</br><span class='label label-default'>"+data.input_description+"</span></h2>"+
+                  "<h2>output_description :</br><span class='label label-default'>"+data.output_description+"</span></h2>"+
+                  "<h2>time_limit :</br><span class='label label-default'>"+data.time_limit+"</span></h2>"+
+                  "<h2>memory_limit :</br><span class='label label-default'>"+data.memory_limit+"</span></h2>"+
+                  "<h2>tag :</br><span class='label label-default'>"+data.tag+"</span></h2>"
+                  $("#problemcontent").append(s);
+              
+          }
+      });
+      };
+      
+      </script>
+   </body>
+</html>

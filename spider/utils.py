@@ -18,7 +18,3 @@ class utils(object):
         # print(tag.contents[0])
         # print(tag1)
         # print(h3[0].contents[0])
-
-# a=utils()
-# mydata=a.request()
-# a.myparse(mydata)

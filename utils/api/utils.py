@@ -45,6 +45,9 @@ class MyBaseView(View):
             return HttpResponse("error")
         #try:
         return super(MyBaseView,self).dispatch(request,*args,**kwargs)
+    def page_num(self,query):
+        _paginator_num=Paginator(query,10)
+        return _paginator_num.num_pages
 
     def paginator_data(self,query,page):
         #_page=int(request.GET.get("page"))

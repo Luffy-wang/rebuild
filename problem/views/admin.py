@@ -21,11 +21,28 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 #@api_view(["GET","POST"])
 #@login_required
 
-class ProblemClass(MyBaseView):
+class Index(MyBaseView):
+    def get(self,request):
+        return render(request,"problem/indexTest.html")
+
+class Problemindex(MyBaseView):
     @method_decorator(ensure_csrf_cookie)
     def get(self,request):
         problem=Problem.objects.all()
-        serializer=ProblemSerializers(problem,many=True)
+        pagenum=super(Problemindex,self).page_num(problem)
+        page_num=[]
+        for i in range(pagenum):
+            page_num.append(i)
+        return render(request,'problem/problemlist.html',{"pagenum":page_num})
+
+
+class ProblemClass(MyBaseView):
+    @method_decorator(ensure_csrf_cookie)
+    def get(self,request):
+        page=request.data.get('page')
+        problem=Problem.objects.all()
+        data=super(ProblemClass,self).paginator_data(problem,page)
+        serializer=ProblemSerializers(data,many=True)
         
         return JsonResponse(serializer.data,safe=False)
     @method_decorator(ensure_csrf_cookie)
