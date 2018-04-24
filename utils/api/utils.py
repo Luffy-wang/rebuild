@@ -8,6 +8,7 @@ from django_redis.cache import RedisCache
 from django_redis.client.default import DefaultClient
 from django.core.cache import cache
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class MyRedis(DefaultClient):
     def __getattr__(self,item):
@@ -24,8 +25,12 @@ class JSONParse(object):
     def parse(body):
         return json.loads(body.decode('utf-8'))
 
+class MyLoginrequired(LoginRequiredMixin,View):
+    login_url = '/login'
+    redirect_field_name = 'redirect_to'
 
 class MyBaseView(View):
+    
     def _get_request_data(self,request):
         if request.method not in ['GET','DELETE']:
             
@@ -42,7 +47,7 @@ class MyBaseView(View):
         try:
             request.data=self._get_request_data(self.request)
         except ValueError as e:
-            return HttpResponse("error")
+            return HttpResponse(e)
         #try:
         return super(MyBaseView,self).dispatch(request,*args,**kwargs)
     def page_num(self,query):

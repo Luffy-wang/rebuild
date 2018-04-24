@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+   <head>
+        <meta charset="UTF-8">
+      <title>Bootstrap dsa</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <!-- 引入 Bootstrap -->
+      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+      <style>
+            #logindev{
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -moz-transform:  translateY(-50%);
+    -ms-transform:  translateY(-50%);
+    -o-transform:  translateY(-50%);
+    transform:  translateY(-50%);
+    
+  }
+        </style> 
+
+
+
+
+
+   </head>
+
+   <body>
+       <!-- <div class="container"> -->
+            
+            <div class="col-lg-4 col-lg-offset-4 col-sm-6 col-sm-offset-3 col-xs-8 col-xs-offset-2" id="logindev">
+                    
+            
+            
+            
+            <form class="form-horizontal" role="form" action="javascript:login()" id='loginform'>
+                
+                    <div class="form-group">
+                      <label for="firstname" class="col-sm-2 control-label">学号</label>
+                      <div class="col-sm-10">
+                        <input type="text" class="form-control" name="userid" placeholder="请输入学号">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="lastname" class="col-sm-2 control-label">密码</label>
+                      <div class="col-sm-10">
+                        <input type="password" class="form-control" name="password" placeholder="请输入密码">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-offset-2 col-sm-10">
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox">请记住我
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-default">登录</button>
+                      </div>
+                    </div>
+                  </form>
+
+
+
+                  
+                  </div>
+                  
+       <!-- </div> -->
+
+
+  <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+  </script>
+  <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+  <!-- <script src="https://cdn.bootcss.com/jquery.serializeJSON/2.9.0/jquery.serializejson.js"></script> -->
+  <!-- <script src="https://cdn.bootcss.com/jquery-json/2.6.0/jquery.json.min.js"></script> -->
+  <script src="js/bootstrap.min.js"></script>
+
+  <script>
+      function login(){
+          var data = {};
+          $('input[name]').each(function() {
+            data[this.getAttribute('name')] = this.value;
+          });
+
+          console.log(JSON.stringify(data));
+          var csrfcookie=$.cookie('csrftoken');
+          $.ajax({
+              type:'post',
+              url:'/account/loginorlogout/',
+              dataType:'json',
+              headers:{'X-CSRFToken':csrfcookie},
+              data:JSON.stringify(data),
+              error:function(data){
+                  alter('login error');
+              }
+          });
+          
+      }
+  </script>
+</body>
+</html>

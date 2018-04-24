@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate,login,logout
 import json
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,redirect
 from django.contrib import admin
 #from ..serializer import MyclassSerializer,ShowClassSerializer
 from django.forms.models import model_to_dict
@@ -21,6 +21,11 @@ from django.core.cache import cache
 from django_redis import get_redis_connection
 from ..tasks import butch_create
 
+class LoginIndex(MyBaseView):
+    def get(self,request):
+        return render(request,"account/login.html")
+
+
 class UserAbout(MyBaseView):
     @method_decorator(ensure_csrf_cookie)
     def get(self,request):
@@ -30,17 +35,17 @@ class UserAbout(MyBaseView):
     def post(self,request):
         data=request.data
         user_id=data.get("userid")
-        
+        #return HttpResponse(user_id)
         password=data.get("password")
         
         user=authenticate(request,user_id=user_id,password=password)
-        return HttpResponse(user)
+        #return HttpResponse(user)
         if user is not None:
             if request.user.is_authenticated:
                 return JsonResponse({'data':0},safe=False)#already login
             else:
                 login(request,user)
-                return JsonResponse({"data":1,"user_id":user_id},safe=False)
+                return redirect("/problem/index")#JsonResponse({"data":1,"user_id":user_id},safe=False)
         else:
             return JsonResponse({"data":12},safe=False)
 

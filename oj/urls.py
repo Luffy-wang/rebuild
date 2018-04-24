@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls import url
-from problem.views.admin import Index
+from account.views.admin import LoginIndex
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +25,5 @@ urlpatterns = [
     path("account/",include("account.urls")),
     path("myclass/",include("myclass.urls")),
     path("homework",include("homework.urls")),
-    url(r"^",Index.as_view(),name="index"),
+    url(r"^",LoginIndex.as_view(),name="index"),
 ]

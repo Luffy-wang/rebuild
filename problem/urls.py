@@ -16,5 +16,5 @@ urlpatterns=[
     url(r"^problemdetail/?$",ProblemDetail.as_view(),name="problemdetail"),
     url(r"^uploadtestcase/?$",UploadTestCase.as_view(),name="uploadTestcase"),
     url(r"^index/?$",Problemindex.as_view(),name="index"),
-    
+    #url(r"^"),
 ]

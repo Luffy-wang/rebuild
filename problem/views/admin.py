@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from utils.api.utils import MyBaseView
+from utils.api.utils import MyBaseView,MyLoginrequired
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 
@@ -21,12 +21,16 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 #@api_view(["GET","POST"])
 #@login_required
 
-class Index(MyBaseView):
+class Index(MyLoginrequired,MyBaseView):
+    @login_required
     def get(self,request):
+        #user=request.user
+        #return HttpResponse(user)
         return render(request,"problem/indexTest.html")
 
-class Problemindex(MyBaseView):
+class Problemindex(MyLoginrequired,MyBaseView):
     @method_decorator(ensure_csrf_cookie)
+    #@login_required
     def get(self,request):
         problem=Problem.objects.all()
         pagenum=super(Problemindex,self).page_num(problem)
