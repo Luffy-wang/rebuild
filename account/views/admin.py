@@ -45,7 +45,7 @@ class UserAbout(MyBaseView):
                 return JsonResponse({'data':0},safe=False)#already login
             else:
                 login(request,user)
-                return redirect("/problem/index")#JsonResponse({"data":1,"user_id":user_id},safe=False)
+                return JsonResponse({"data":1,"user_id":user_id},safe=False)
         else:
             return JsonResponse({"data":12},safe=False)
 

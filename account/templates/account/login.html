@@ -97,8 +97,12 @@
               dataType:'json',
               headers:{'X-CSRFToken':csrfcookie},
               data:JSON.stringify(data),
-              error:function(data){
-                  alter('login error');
+              success:function(data){
+                if(data.data==1)
+                {
+                  window.location.href = "/problem/index";
+                }
+                  
               }
           });
           

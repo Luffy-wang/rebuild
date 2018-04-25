@@ -1,6 +1,7 @@
 from django.http import HttpResponse,JsonResponse
 from django.shortcuts import render
 from ..models import Problem
+from account.models import User
 import os
 import zipfile
 import hashlib
@@ -10,7 +11,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from utils.api.utils import MyBaseView,MyLoginrequired
@@ -32,6 +33,9 @@ class Problemindex(MyLoginrequired,MyBaseView):
     @method_decorator(ensure_csrf_cookie)
     #@login_required
     def get(self,request):
+        data=request.user
+        if(data.is_anonymous):
+            return redirect('/')
         problem=Problem.objects.all()
         pagenum=super(Problemindex,self).page_num(problem)
         page_num=[]
