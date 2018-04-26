@@ -37,7 +37,9 @@ class UserAbout(MyBaseView):
         user_id=data.get("userid")
         #return HttpResponse(user_id)
         password=data.get("password")
-        
+        user_type=User.objects.values('user_type').filter(user_id=user_id).first()
+        #user_type=model_to_dict(user_type)
+        #user_type=User.objects.get
         user=authenticate(request,user_id=user_id,password=password)
         #return HttpResponse(user)
         if user is not None:
@@ -45,7 +47,7 @@ class UserAbout(MyBaseView):
                 return JsonResponse({'data':0},safe=False)#already login
             else:
                 login(request,user)
-                return JsonResponse({"data":1,"user_id":user_id},safe=False)
+                return JsonResponse({"data":1,"user_type":user_type['user_type']},safe=False)
         else:
             return JsonResponse({"data":12},safe=False)
 

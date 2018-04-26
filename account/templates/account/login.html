@@ -12,15 +12,15 @@
 
       <style>
             #logindev{
-    position: absolute;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform:  translateY(-50%);
-    -ms-transform:  translateY(-50%);
-    -o-transform:  translateY(-50%);
-    transform:  translateY(-50%);
+    position:absolute;
+    top:50%;
+    -webkit-transform:translateY(-50%);
+    -moz-transform:translateY(-50%);
+    -ms-transform:translateY(-50%);
+    -o-transform:translateY(-50%);
+    transform:translateY(-50%);
     
-  }
+  };
         </style> 
 
 
@@ -75,12 +75,11 @@
        <!-- </div> -->
 
 
-  <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
-  </script>
+  <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
   <!-- <script src="https://cdn.bootcss.com/jquery.serializeJSON/2.9.0/jquery.serializejson.js"></script> -->
   <!-- <script src="https://cdn.bootcss.com/jquery-json/2.6.0/jquery.json.min.js"></script> -->
-  <script src="js/bootstrap.min.js"></script>
+  <script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 
   <script>
       function login(){
@@ -89,7 +88,7 @@
             data[this.getAttribute('name')] = this.value;
           });
 
-          console.log(JSON.stringify(data));
+          //console.log(JSON.stringify(data));
           var csrfcookie=$.cookie('csrftoken');
           $.ajax({
               type:'post',
@@ -98,15 +97,25 @@
               headers:{'X-CSRFToken':csrfcookie},
               data:JSON.stringify(data),
               success:function(data){
-                if(data.data==1)
+                if(data.data==1 && data.user_type=='Student')
                 {
-                  window.location.href = "/problem/index";
+                  $.cookie('user_type',2);
+                  //console.log(data.user_type);
+                 
                 }
-                  
+                if(data.data==1 && data.user_type=='Teacher')
+                {
+                  $.cookie('user_type',1);
+                }
+                if(data.data==1 && data.user_type=='Admin')
+                {
+                  $.cookie('user_type',0);
+                }
+                window.location.href = "/problem/index";
               }
           });
           
-      }
+      };
   </script>
 </body>
 </html>

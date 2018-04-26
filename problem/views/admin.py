@@ -23,7 +23,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 #@login_required
 
 class Index(MyLoginrequired,MyBaseView):
-    @login_required
+    #@login_required
     def get(self,request):
         #user=request.user
         #return HttpResponse(user)
