@@ -1,0 +1,117 @@
+{%extends "problem/templates/problem/indexTest.html"%}
+{%block mycontent%}
+
+<table class="table table-hover">
+        <caption>作业</caption>
+        <thead>
+          <tr>
+                <th>作业</th>
+            <th>作业id</th>
+            <th>作业标题</th>
+          </tr>
+        </thead>
+        <tbody>
+        
+        </tbody>
+      </table>
+
+      <ul class="pagination">
+            <li><a href="javascript:homework(1)">&laquo;</a></li>
+        {%for page in pagenum%}
+        <li ><a href="javascript:homework({{forloop.counter}})">{{forloop.counter}}</a></li>
+                                    
+        {%endfor%}
+
+        <li><a href="javascript:homework({{forloop.counter}})"+>&raquo;</a></li>
+    </ul>
+      {%endblock%}
+
+
+      {%block myscript%}
+
+      <script>
+            $(function() {
+                $.ajax({
+                    type:'get',
+                    url:'http://127.0.0.1:8000/homework/showhomework/?page=1',
+                    dataType:'json',
+                    success:function(data){
+                        //var str='';
+                        for(var i=0;i<data.length;i++)
+                        {
+                            s="<tr><td><a href=javascript:homeworkitemdetail("+data[i].id+")>"+data[i].id+"</a></td><td>"+data[i].homework_item+"</a></td><td>"+data[i].homework_item_title+"</td></tr>";
+                            $("tbody").append(s);
+                        }
+                    }
+                });
+  
+                $("ol").html("<li><a href='/announcement/index'>Home</a></li><li><a href='/homework/index'>homework</a></li>");
+                
+            });
+
+
+        function homework(param){
+        $.ajax({
+          type:'get',
+          url:'http://127.0.0.1:8000/homework/showhomework/?page'+param,
+          dataType:'json',
+          success:function(data){
+              
+              $("tbody").empty();
+              for(var i=0;i<data.length;i++)
+              {
+                s="<tr><td><a href=javascript:homeworkitemdetail("+data[i].id+")>"+data[i].id+"</a></td><td>"+data[i].homework_item+"</td><td>"+data[i].homework_item_title+"</td></tr>";
+                  $("tbody").append(s);
+              }
+          }
+      });
+      };
+
+
+
+
+        function homeworkitemdetail(param){
+        $.ajax({
+          type:'get',
+          url:'http://127.0.0.1:8000/homework/showclasshomework/?homeworkitem='+param,
+          dataType:'json',
+          success:function(data){
+              
+              $("tbody").empty();
+              for(var i=0;i<data.length;i++)
+              {
+                s="<tr><td><a href=javascript:problemdetail("+data[i].id,data[i].problem_id_id+")>"+data[i].id+"</a></td><td>"+data[i].problem_title+"</td><td>"+data[i].homework_item_id+"</td><td>"+data[i].problem_id_id+"</td></tr>";
+                  $("tbody").append(s);
+              }
+              $("ol").html("<li><a href='/announcement/index'>Home</a></li><li><a href='/homework/index'>homework</a></li><li><a href='/homework/showclasshomework/?homeworkitem='"+home+">homework item"+home+"</a></li>");
+          }
+      });
+      };
+
+
+      function problemdetail(home,param){
+        $.ajax({
+          type:'get',
+          url:'http://127.0.0.1:8000/problem/problemdetail/?problem_id='+param,
+          dataType:'json',
+          success:function(data){
+              
+              $("#problemcontent").empty();
+              $("ol").html("<li><a href='/announcement/index'>Home</a></li><li><a href='/homework/index'>homework</a></li><li><a href='/homework/showclasshomework/?homeworkitem='"+home+">homework item"+home+"</a></li><li>"+param+"</li>");
+                  s="<h2>title :</br><span class='label label-default'>"+data.title+"</span></h2>"+
+                  "<h2>description :</br><span class='label label-default'>"+data.description+"</span></h2>"+
+                  "<h2>input_description :</br><span class='label label-default'>"+data.input_description+"</span></h2>"+
+                  "<h2>output_description :</br><span class='label label-default'>"+data.output_description+"</span></h2>"+
+                  "<h2>time_limit :</br><span class='label label-default'>"+data.time_limit+"</span></h2>"+
+                  "<h2>memory_limit :</br><span class='label label-default'>"+data.memory_limit+"</span></h2>"+
+                  "<h2>tag :</br><span class='label label-default'>"+data.tag+"</span></h2>"
+            $("#problemcontent").append(s);
+              
+          }
+      });
+      };
+  
+        </script>
+
+
+{%endblock%}

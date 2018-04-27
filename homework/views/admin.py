@@ -1,24 +1,44 @@
 from utils.api.utils import MyBaseView
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
-from account.models import User
+from account.models import User,User_type
 from myclass.models import Myclass
 from ..models import Homework_item
 from ..serializer import HomeworkItemSerializer,ClassHomeworkSerializer
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.forms.models import model_to_dict
 
-
+class HomeworkIndex(MyBaseView):
+    def get(self,request):
+        data=request.user
+        #return JsonResponse({'data':data},safe=False)
+        if(data.is_anonymous):
+            return redirect('/')
+        homeworkitem=Homework_item.objects.all()
+        pagenum=super(HomeworkIndex,self).page_num(homeworkitem)
+        page_num=[]
+        for i in range(pagenum):
+            page_num.append(i)
+        return render(request,'homework/homework_index.html',{"pagenum":page_num})
 
 class HomeworkItem(MyBaseView):
     @method_decorator(ensure_csrf_cookie)
     def get(self,request):
-        if not User.is_teacher(request.user) or User.is_admin(request.user):
+        User.objects.filter(user_id='04151209').update(user_type=User_type.TEACHER)
+        if User.is_student(request.user):
+            return JsonResponse({"data":'test'},safe=False)
+        if  User.is_teacher(request.user) :#or User.is_admin(request.user):
+            
             teacheruser=Myclass.objects.get(class_member=request.user.user_id)
             teacheruser=model_to_dict(teacheruser)
             class_name=teacheruser["class_name"]
         else:
-            return JsonResponse({"data":0},safe=False)
+            return JsonResponse({"data":'not teacher or admin'},safe=False)
         try:
+            page=request.data['page']
             homeworkitem=Homework_item.objects.filter(class_name=class_name)
+            homeworkitem=super(HomeworkItem,self).paginator_data(homeworkitem,page)
             serializer=HomeworkItemSerializer(homeworkitem,many=True)
             return JsonResponse(serializer.data,safe=False)
         except:
