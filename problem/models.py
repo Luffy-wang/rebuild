@@ -12,9 +12,9 @@ class Problem(models.Model):
     title=models.CharField(max_length=30,null=True)
     
     #exam=models.ForeignKey(null=True,blank=True)#todo import exercise
-    description=models.CharField(max_length=50,null=True)
-    input_description=models.CharField(max_length=50,null=True)
-    output_description=models.CharField(max_length=50,null=True)
+    description=models.CharField(max_length=5000,null=True)
+    input_description=models.CharField(max_length=5000,null=True)
+    output_description=models.CharField(max_length=5000,null=True)
     
     test_case_id=models.CharField(max_length=10,null=True) #todo
     tag=models.CharField(max_length=20,null=True)
