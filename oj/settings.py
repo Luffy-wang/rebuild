@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "account.apps.AccountConfig",
     "myclass.apps.MyclassConfig",
     "homework.apps.HomeworkConfig",
+    "annoucement.apps.AnnouncementConfig",
+    "discussion.apps.DiscussionConfig",
     "judgermanage",
     #"corsheaders",
 ]

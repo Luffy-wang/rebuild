@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="http://127.0.0.1:8000/announcement/announcementAddPage">添加公告</a><br>
+{#<input type="button" value="添加公告" onclick="add()" /><br>#}
+{% for i in data %}
+{{ i.fields}},{{ i.pk }}
+   <div><a href="http://127.0.0.1:8000/announcement/announcementUpdate/{{ i.pk }}/">修改</a>
+       <a href="http://127.0.0.1:8000/announcement/announcementDelete/{{ i.pk }}/">删除</a><br>
+   </div>
+
+{% endfor %}
+{#{% for i in data %}#}
+{#    {{ id }}#}
+{#{% endfor %}#}
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+  <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+<script language="JavaScript">
+    {#var data=[{"id":"1"},{"id":"2"}]#}
+
+    function add() {
+         $.ajax({
+                    url: "http://127.0.0.1:8000/announcement/addAnnouncement",
+                    method: "GET",
+                });
+    }
+
+    function test() {
+         var csrfcookie=$.cookie('csrftoken');
+         $.ajax({
+                    // beforeSend: csrfTokenHeader,
+                    url: "http://127.0.0.1:8000/announcement/announcementAdmin/",
+                    method: "GET",
+                    headers:{'X-CSRFToken':csrfcookie},
+                });
+
+
+    test()
+
+</script>
+</html>

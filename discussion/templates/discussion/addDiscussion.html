@@ -1,0 +1,104 @@
+<html>
+<h1>addannouncement</h1>
+<form  method="POST" enctype="application/json;charset=utf-8 " >
+
+
+    {% for i in data%}
+        {{ i.fields }}<a href="javascript:follow({{forloop.counter}})">评论</a>
+        <a href="javascript:del({{i.pk}},0)">删除</a><br>
+        {% for j in i.follow%}
+        ----{{ j }}<a href="javascript:del({{i.pk}},{{ j.pk }})">删除</a><br>
+        {% endfor %}
+        <div id="{{forloop.counter}}" style="display: none">
+        <input type="text"  name="{{ i.pk }}" /><br>
+        <input type="button" value="提交" onclick="postFollow({{forloop.counter}},{{ i.fields.problem_id }},{{ i.pk }})">
+        </div>
+    {% endfor %}
+
+
+
+    <br><br>
+
+    content:<input type="text" id="content"/><br>
+
+    <input type="button" name="submit" onclick="test({{ problem_id }},0)" value="submit"/>
+</form>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+  <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+<script language="JavaScript">
+    function postFollow(index,problem_id,discussion_id) {
+        alert(index+","+problem_id)
+        test(problem_id,discussion_id)
+        {#document.getElementById(problem_id).style.display="none";//隐藏#}
+
+    }
+    function follow(index) {
+　　     document.getElementById(index).style.display="";//显
+    }
+    function del(discussion_id,follow_id) {
+        alert(discussion_id)
+        alert(follow_id)
+         var csrfcookie=$.cookie('csrftoken');
+         $.ajax({
+                    // beforeSend: csrfTokenHeader,
+                    url: "http://127.0.0.1:8000/discussion/discussionAdmin/",
+                    method: "delete",
+                    headers:{'X-CSRFToken':csrfcookie},
+                    data:JSON.stringify({"discussion_id":discussion_id,"follow_id":follow_id}),
+                    dataType: "json",
+                    success: function (res) {
+
+                           {#alert(res);#}
+
+                    },
+                    error:function (err) {
+                        console.log("12");
+
+                    }
+                });
+    }
+
+    function test(problem_id,discussion_id) {
+        {#alert(discussion_id)#}
+        {#alert(document.getElementsByName(discussion_id)[0].value)#}
+        {#console.log(document.getElementsByName(discussion_id)[0].value)#}
+         if (discussion_id==0){
+                 var data = {
+                 "content":$("#content").val() ,
+                 "problem_id":problem_id,
+                 "discussion_id":discussion_id
+             }
+         }
+         else {
+                 var data = {
+                 "content":document.getElementsByName(discussion_id)[0].value,
+                 "problem_id":problem_id,
+                 "discussion_id":discussion_id
+             }
+         }
+
+         var csrfcookie=$.cookie('csrftoken');
+         $.ajax({
+                    // beforeSend: csrfTokenHeader,
+                    url: "http://127.0.0.1:8000/discussion/discussionAdmin/",
+                    method: "POST",
+                    headers:{'X-CSRFToken':csrfcookie},
+                    data:JSON.stringify(data),
+                    dataType: "json",
+                    success: function (res) {
+
+                           {#alert(res);#}
+
+                    },
+                    error:function (err) {
+                        console.log("12");
+
+                    }
+                });
+                {#alert("submit...")#}
+
+    }
+
+</script>
+</html>
