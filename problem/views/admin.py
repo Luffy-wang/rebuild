@@ -17,35 +17,37 @@ from django.views.decorators.csrf import csrf_exempt
 from utils.api.utils import MyBaseView,MyLoginrequired
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.generic import View
 
 #@csrf_exempt
 #@api_view(["GET","POST"])
 #@login_required
 
-class Index(MyLoginrequired,MyBaseView):
-    #@login_required
-    def get(self,request):
-        #user=request.user
-        #return HttpResponse(user)
-        return render(request,"problem/indexTest.html")
+# class Index(MyLoginrequired,MyBaseView):
+#     #@login_required
+#     def get(self,request):
+#         #user=request.user
+#         #return HttpResponse(user)
+#         return #render(request,"problem/indexTest.html")
 
-class Problemindex(MyLoginrequired,MyBaseView):
-    @method_decorator(ensure_csrf_cookie)
-    #@login_required
-    def get(self,request):
-        data=request.user
-        if(data.is_anonymous):
-            return redirect('/')
-        problem=Problem.objects.all()
-        pagenum=super(Problemindex,self).page_num(problem)
-        page_num=[]
-        for i in range(pagenum):
-            page_num.append(i)
-        return render(request,'problem/problemlist.html',{"pagenum":page_num})
+# class Problemindex(MyLoginrequired,MyBaseView):
+#     #@method_decorator(ensure_csrf_cookie)
+#     #@login_required
+#     def get(self,request):
+#         data=request.user
+#         if(data.is_anonymous):
+#             return redirect('/')
+#         problem=Problem.objects.all()
+#         pagenum=super(Problemindex,self).page_num(problem)
+#         #return JsonResponse(pagenum,safe=False)
+#         page_num=[]
+#         for i in range(pagenum):
+#             page_num.append(i)
+#         return render(request,'problem/problemlist.html',{"pagenum":page_num})
 
 
 class ProblemClass(MyBaseView):
-    @method_decorator(ensure_csrf_cookie)
+    #@method_decorator(ensure_csrf_cookie)
     def get(self,request):
         page=request.data.get('page')
         problem=Problem.objects.all()
@@ -53,28 +55,33 @@ class ProblemClass(MyBaseView):
         serializer=ProblemSerializers(data,many=True)
         
         return JsonResponse(serializer.data,safe=False)
-    @method_decorator(ensure_csrf_cookie)
     def post(self,request):
         data=request.data
     
         _id=data.get("_id")
         if not _id:
-            return HttpResponse("id is required")
+            return JsonResponse({"data":"id is required"},safe=False)
         
-        if Problem.objects.filter(_id=_id).exists():
-            return HttpResponse("duplicate problem_id")
         tags=data.get("tag")
         if not tags:
-            return HttpResponse("tag is required")
-            
-        serializer=ProblemSerializers(data=data)
+            return JsonResponse({"data":"tag is required"},safe=False)
         
+        serializer=ProblemSerializers(data=data)
+        data["test_case_id"]=_id
+
+        if Problem.objects.filter(_id=_id).exists():   #更新
+            pro=Problem.objects.get(_id=_id)
+            serializer=ProblemSerializers(pro,data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse({"data":1,'msg':'更新成功'},safe=False)
+            else:
+                return JsonResponse({"data":0,'msg':'更新失败'},safe=False)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse({"data":1},safe=False)  #todo modify 
-        else:
-            
-            return JsonResponse({"data":0},safe=False)        
+            return JsonResponse({"data":1,'msg':'创建成功'},safe=False)  #todo modify 
+        else:      
+            return JsonResponse({"data":0,'msg':'创建失败'},safe=False)       
 
 class ProblemDetail(MyBaseView):
     @method_decorator(ensure_csrf_cookie)
@@ -86,7 +93,6 @@ class ProblemDetail(MyBaseView):
             return HttpResponse("problem id is required")
         problem_data=get_object_or_404(Problem,_id=problem_id)
         serializer=ProblemSerializers(problem_data)
-        #return_data=super(ProblemDetail,self).paginator(serializer.data,page)
         return JsonResponse(serializer.data,safe=False)
     @method_decorator(ensure_csrf_cookie)
     def delete(self,request):
@@ -103,14 +109,14 @@ class ProblemDetail(MyBaseView):
 
 
 
-class UploadTestCase(MyBaseView):
-    @method_decorator(ensure_csrf_cookie)
+class UploadTestCase(View):
+    #@method_decorator(ensure_csrf_cookie)
     def post(self,request):
-        test_case_id=request.data.get("_id")
-        test_case_dir=os.path.join("/test_case",test_case_id)#todo
+        test_case_id=request.POST.get("_id")
+        test_case_dir=os.path.join("/test_case",test_case_id)
         os.mkdir(test_case_dir)
         file=request.FILES["fileupload"]
-        tmp_file=os.path.join("/tmp",_id+".zip")
+        tmp_file=os.path.join("/tmp",test_case_id+".zip")
         
         
         with open(tmp_file,"wb") as f:
@@ -133,7 +139,7 @@ class UploadTestCase(MyBaseView):
                     md5_cache[item]=hashlib.md5(content.rstrip()).hexdigest()
 
                 f.write(content)
-        test_case_info={"spj":"false","test_cases":{}}
+        test_case_info={"spj":False,"test_cases":{}}
 
         name_list=zip(*[name_list[i::2] for i in range(2)])
         for index,item in enumerate(name_list):

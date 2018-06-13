@@ -15,5 +15,6 @@ urlpatterns=[
     url(r"^loginorlogout/?$",UserAbout.as_view(),name="userabout"),
     url(r"^userregister/?$",UserRegister.as_view(),name="userregister"),
     url(r"show/?$",ShowUser.as_view(),name="show"),
-    url(r"^login",LoginIndex.as_view(),name="login"),
+    #url(r"^login",LoginIndex.as_view(),name="login"),
+    url(r"^edittype/",ModifyUser.as_view(),name='edit'),
 ]

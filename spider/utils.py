@@ -2,17 +2,22 @@ import urllib3
 from bs4 import BeautifulSoup
 import redis
 import threading
-
+import logging
 
 
 k=0
+
+logging.basicConfig(filename='request.log')
 class utils(object):
     
     def request(self,method,url):
         
         http=urllib3.PoolManager()
         r=http.request(method,url)
-        return r.data
+        if r.status != 200:
+            logging.error(url+' status:'+str(r.status))
+        else:
+            return r.data
     def myparse(self,html,redisconn):
         global k
         lock=threading.Lock()
@@ -50,43 +55,5 @@ class utils(object):
             lock.release()
         return
 
-        # for i in p:
-        #     print(i)
-        # print('--------------')
-        # for i in div:
-        #     print(i)
-        # print('--------------')
-        # for i in sio:
-        #     print(i)
-        # return 
-        # # print(p[0].string)
-        # # return 
-        # tmp=[None]
-        # for i in range(6):
-        #     tmp.append(p[i].string)
-        #     if(i<3):
-        #         tmp.append(div[i].string)
-        #     if(i>2 and i<5):
-        #         tmp.append(sio[i-3].string)
-        #     if(i==5):
-        #         tmp.append(div[3])
-        
-        # for i in tmp:
-        #     print(i)
-        
-        # for i in div:
-        #     #if(i['class']=='ptx'):
-        #     print(i)
-        #     #print(j.string)
-        # for j in sio:
-        #     print(j.string)
-        #print(p)
-        # tag1=p[1].contents[0]
-        # tag=p[0].contents[1]
-        # print(tag.contents[0])
-        # print(tag1)
-        # print(h3[0].contents[0])
-        
-        
-        #p pre class=ptx
-        #get_text()
+# bc=utils()
+# bc.request('get','http://poj.org/problem?id=1000&lang=zh-CN&change=true')

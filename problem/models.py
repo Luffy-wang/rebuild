@@ -8,14 +8,15 @@ class ProblemTag(models.Model):
         db_table="problem_tag" # db_table used to override the database table name
 
 class Problem(models.Model):
-    _id=models.CharField(max_length=24,db_index=True)
+    _id=models.CharField(max_length=24,db_index=True,unique=True)
     title=models.CharField(max_length=30,null=True)
     
     #exam=models.ForeignKey(null=True,blank=True)#todo import exercise
     description=models.CharField(max_length=5000,null=True)
     input_description=models.CharField(max_length=5000,null=True)
     output_description=models.CharField(max_length=5000,null=True)
-    
+    simple_input=models.CharField(max_length=5000,null=True)
+    simple_output=models.CharField(max_length=5000,null=True)
     test_case_id=models.CharField(max_length=10,null=True) #todo
     tag=models.CharField(max_length=20,null=True)
     #languages=JSONField()#todo detele
